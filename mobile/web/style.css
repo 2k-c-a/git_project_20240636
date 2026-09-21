@@ -171,6 +171,67 @@ form button:hover {
     background-color: #24587e;
 }
 
+/* 링크 버튼 */
+.button {
+    display: inline-block;
+    padding: 10px 24px;
+    color: white;
+    text-decoration: none;
+    background-color: #2f6f9f;
+    border-radius: 4px;
+}
+
+.button:hover {
+    background-color: #24587e;
+}
+
+/* 코드 블록 (줄 번호 + 실행 중인 줄 강조) */
+pre.code {
+    margin: 0;
+    padding: 12px 0;
+    color: #eee;
+    font-family: Consolas, "D2Coding", monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    white-space: normal;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    overflow-x: auto;
+    counter-reset: line;
+}
+
+pre.code .line {
+    display: block;
+    padding-right: 16px;
+    white-space: pre;
+}
+
+pre.code .line::before {
+    content: counter(line);
+    counter-increment: line;
+    display: inline-block;
+    width: 2.5em;
+    margin-right: 12px;
+    color: #888;
+    text-align: right;
+}
+
+pre.code .line.hl {
+    background-color: rgba(255, 214, 0, 0.25);
+}
+
+code {
+    padding: 1px 4px;
+    font-family: Consolas, "D2Coding", monospace;
+    background-color: #e8f1f8;
+    border-radius: 3px;
+}
+
+pre.code code {
+    padding: 0;
+    background: none;
+}
+
 /* 푸터 */
 footer {
     padding: 20px;
