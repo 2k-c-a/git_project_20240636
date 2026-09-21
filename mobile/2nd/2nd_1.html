@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>시맨틱 태그 영역</title>
+
+    <style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: sans-serif;
+}
+
+header,
+footer {
+    padding: 24px 20px;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+header {
+    background-color: lightblue;
+}
+
+footer {
+    background-color: lightgray;
+}
+
+main {
+    display: flex;
+    align-items: stretch; /* section과 aside 높이를 맞춰줌 */
+    gap: 20px;
+    padding: 20px;
+    min-height: 400px;
+}
+
+.left {
+    width: 67%;
+    display: flex; /* section이 .left 높이를 꽉 채우도록 */
+}
+
+section {
+    width: 100%;
+    background-color: lightgreen;
+    padding: 20px;
+}
+
+article {
+    margin: 20px 0;
+    padding: 16px;
+    background-color: lightyellow;
+}
+
+aside {
+    width: 33%;
+}
+
+.aside-content {
+    height: 100%;
+    padding: 20px;
+    background-color: lightpink;
+}
+    </style>
+</head>
+
+<body>
+
+    <header>
+        Header
+    </header>
+
+<main>
+    <div class="left">
+
+        <section>
+            <h2>Section</h2>
+
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+
+            <article>
+                <h3>Article</h3>
+
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Eum consequuntur placeat eaque aliquid consequatur
+                perferendis facere quod.
+            </article>
+
+        </section>
+
+    </div>
+
+    <aside>
+        <div class="aside-content">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            Quidem laboriosam sunt eum.
+        </div>
+    </aside>
+</main>
+
+
+    <footer>
+        Footer
+    </footer>
+
+</body>
+</html>

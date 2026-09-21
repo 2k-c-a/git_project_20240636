@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>시맨틱 태그 영역</title>
+
+    <style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: sans-serif;
+    padding: 20px;
+}
+
+header,
+footer {
+    display: inline-block; /* 글자 있는 만큼만 색이 채워짐 */
+    padding: 8px 12px;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+header {
+    background-color: lightblue;
+}
+
+footer {
+    background-color: lightgray;
+}
+
+main {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.left {
+    width: 67%;
+}
+
+section {
+    display: inline-block;
+    padding: 12px;
+    background-color: lightgreen;
+}
+
+article {
+    display: inline-block;
+    margin: 12px 0;
+    padding: 12px;
+    background-color: lightyellow;
+}
+
+aside {
+    width: 33%;
+}
+
+.aside-content {
+    display: inline-block;
+    padding: 12px;
+    background-color: lightpink;
+}
+    </style>
+</head>
+
+<body>
+
+    <header>
+        Header
+    </header>
+
+<main>
+    <div class="left">
+
+        <section>
+            <h2>Section</h2>
+
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+
+            <article>
+                <h3>Article</h3>
+
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Eum consequuntur placeat eaque aliquid consequatur
+                perferendis facere quod.
+            </article>
+
+        </section>
+
+    </div>
+
+    <aside>
+        <div class="aside-content">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita voluptate nulla perspiciatis eos dolorem recusandae voluptas sed odit, quae, ipsa maiores rerum nam. Facilis, nihil voluptatem ipsa nesciunt quis voluptate mollitia eveniet animi. Repudiandae, ducimus incidunt at pariatur quibusdam earum?
+        </div>
+    </aside>
+</main>
+
+
+    <footer>
+        Footer
+    </footer>
+
+</body>
+</html>
