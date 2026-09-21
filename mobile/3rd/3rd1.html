@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미디어 쿼리 배경색</title>
+    <style>
+
+        body {
+            background-color: purple;
+            color: white;
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        @media screen and (max-width: 720px) {
+            body {
+                background-color: yellow;
+                color: black;
+            }
+        }
+
+        @media screen and (max-width: 500px) {
+            body {
+                background-color: yellowgreen;
+                color: black;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>미디어 쿼리</h1>
+    <p>반응형 웹에 대한 예</p>
+</body>
+</html>

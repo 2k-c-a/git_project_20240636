@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>갤러리</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>모바일 웹 실습</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">홈</a>
+        <a href="info.html">소개</a>
+        <a href="gallery.html" class="active">갤러리</a>
+        <a href="contact.html">문의</a>
+    </nav>
+
+    <main>
+        <section>
+            <h2>이미지</h2>
+            <figure>
+                <!-- 이미지를 넣을 자리: 아래 div를 지우고 <img src="images/파일명.jpg" alt="설명"> 을 넣으세요 -->
+                <div class="image-slot">이미지 자리</div>
+                <figcaption>이미지 설명</figcaption>
+            </figure>
+        </section>
+
+        <section>
+            <h2>비디오</h2>
+            <!-- 비디오를 넣을 자리: <video> 안에 <source src="video/파일명.mp4" type="video/mp4"> 를 넣으세요 -->
+            <div class="video-wrap">
+                <video controls>
+                    <!-- <source src="video/파일명.mp4" type="video/mp4"> -->
+                    비디오를 지원하지 않는 브라우저입니다.
+                </video>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 모바일 웹 실습</p>
+    </footer>
+</body>
+</html>

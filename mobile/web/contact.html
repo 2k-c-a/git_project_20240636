@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>모바일 웹 실습</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">홈</a>
+        <a href="info.html">소개</a>
+        <a href="gallery.html">갤러리</a>
+        <a href="contact.html" class="active">문의</a>
+    </nav>
+
+    <main>
+        <section>
+            <h2>문의하기</h2>
+            <form>
+                <label for="name">이름</label>
+                <input type="text" id="name" name="name">
+
+                <label for="email">이메일</label>
+                <input type="email" id="email" name="email">
+
+                <label for="message">내용</label>
+                <textarea id="message" name="message" rows="5"></textarea>
+
+                <button type="submit">보내기</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 모바일 웹 실습</p>
+    </footer>
+</body>
+</html>
