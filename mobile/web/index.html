@@ -11,6 +11,15 @@
         <h1>모바일 웹 실습</h1>
     </header>
 
+    <div id="bgm-player" class="bgm-player">
+        <button id="bgm-toggle" type="button" onclick="toggleBgm()">▶</button>
+        <span id="bgm-time">0:00 / 0:00</span>
+    </div>
+    <!-- 배경음악 파일 자리: audio/파일명.mp3 를 넣으세요 -->
+    <audio id="bgm" loop>
+        <source src="audio/bgm.mp3" type="audio/mpeg">
+    </audio>
+
     <nav>
         <a href="index.html" class="active">홈</a>
         <a href="info.html">소개</a>
@@ -38,10 +47,53 @@
                 <li><a href="contact.html">문의</a> - 문의 양식</li>
             </ul>
         </section>
+
+        <section>
+            <h2>외부 링크</h2>
+            <ul>
+                <li><a href="mailto:woohyeuk11@gmail.com">이메일 링크</a></li>
+                <li><a href="https://github.com/2k-c-a" target="_blank" rel="noopener">sns 링크</a></li>
+                <li><a href="map.html">지도 링크</a></li>
+            </ul>
+        </section>
     </main>
 
     <footer>
         <p>&copy; 2026 모바일 웹 실습</p>
     </footer>
+
+    <script>
+        var bgm = document.getElementById('bgm');
+        var bgmToggle = document.getElementById('bgm-toggle');
+        var bgmTime = document.getElementById('bgm-time');
+
+        function formatTime(sec) {
+            if (!isFinite(sec)) return '0:00';
+            var m = Math.floor(sec / 60);
+            var s = Math.floor(sec % 60);
+            return m + ':' + (s < 10 ? '0' : '') + s;
+        }
+
+        function toggleBgm() {
+            if (bgm.paused) {
+                bgm.play();
+            } else {
+                bgm.pause();
+            }
+        }
+
+        bgm.addEventListener('play', function () {
+            bgmToggle.textContent = '❚❚';
+        });
+        bgm.addEventListener('pause', function () {
+            bgmToggle.textContent = '▶';
+        });
+        bgm.addEventListener('timeupdate', function () {
+            bgmTime.textContent = formatTime(bgm.currentTime) + ' / ' + formatTime(bgm.duration);
+        });
+        bgm.addEventListener('loadedmetadata', function () {
+            bgmTime.textContent = formatTime(bgm.currentTime) + ' / ' + formatTime(bgm.duration);
+        });
+    </script>
 </body>
 </html>

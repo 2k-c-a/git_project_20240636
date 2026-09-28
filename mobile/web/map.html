@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지도</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>모바일 웹 실습</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">홈</a>
+        <a href="info.html">소개</a>
+        <a href="gallery.html">갤러리</a>
+        <a href="contact.html">문의</a>
+    </nav>
+
+    <main>
+        <section>
+            <h2>지도</h2>
+            <p>장안대학교 정보통신관을 중심으로 표시됩니다. 지도를 드래그해서 이동하고, +/- 버튼이나 마우스 휠로 확대·축소할 수 있습니다.</p>
+
+            <form id="map-search" class="map-search">
+                <input type="text" id="map-search-input" placeholder="장소를 검색하세요" required>
+                <button type="submit">검색</button>
+            </form>
+
+            <div class="map-wrap">
+                <iframe
+                    id="map-frame"
+                    src="https://maps.google.com/maps?q=37.2112,126.9474&z=18&output=embed"
+                    title="지도"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </section>
+
+        <p><a href="index.html" class="button">홈으로</a></p>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 모바일 웹 실습</p>
+    </footer>
+
+    <script>
+        document.getElementById('map-search').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var query = document.getElementById('map-search-input').value.trim();
+            if (!query) return;
+            document.getElementById('map-frame').src =
+                'https://maps.google.com/maps?q=' + encodeURIComponent(query) + '&output=embed';
+        });
+    </script>
+</body>
+</html>
