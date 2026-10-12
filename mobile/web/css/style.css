@@ -42,6 +42,38 @@ nav a.active {
     background-color: #1a4260;
 }
 
+/* 메뉴 드롭다운 */
+.nav-item {
+    position: relative;
+}
+
+.nav-item > a {
+    display: block;
+}
+
+.submenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 10;
+    min-width: 100%;
+    background-color: #24587e;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.submenu a {
+    display: block;
+    padding: 10px 24px;
+}
+
+.nav-item:hover > .submenu,
+.nav-item:focus-within > .submenu {
+    display: block;
+}
+
 /* 본문 */
 main {
     max-width: 800px;
@@ -305,6 +337,25 @@ pre.code code {
     background: none;
 }
 
+/* 마우스 이벤트 체험 박스 */
+.mouse-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    padding: 24px;
+    border: 2px dashed #2f6f9f;
+    border-radius: 8px;
+    background-color: white;
+    color: #24587e;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.2s;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
 /* 푸터 */
 footer {
     padding: 20px;
@@ -318,6 +369,11 @@ footer {
     nav {
         flex-direction: column;
         text-align: center;
+    }
+
+    .submenu {
+        position: static;
+        box-shadow: none;
     }
 
     header h1 {

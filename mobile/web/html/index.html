@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>홈</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon-16.png">
+    <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+</head>
+<body>
+    <header>
+        <h1>모바일 웹 실습</h1>
+    </header>
+
+    <div id="bgm-player" class="bgm-player">
+        <button id="bgm-toggle" type="button">▶</button>
+        <span id="bgm-time">0:00 / 0:00</span>
+    </div>
+    <!-- 배경음악 파일 자리: ../audio/파일명.mp3 를 넣으세요 -->
+    <audio id="bgm" loop>
+        <source src="../audio/bgm.mp3" type="audio/mpeg">
+    </audio>
+
+    <nav>
+        <div class="nav-item">
+            <a href="index.html" class="active">홈</a>
+            <div class="submenu">
+                <a href="idea.html">a</a>
+                <a href="map.html">b</a>
+                <a href="gallery.html">c</a>
+            </div>
+        </div>
+        <div class="nav-item">
+            <a href="info.html">소개</a>
+            <div class="submenu">
+                <a href="idea.html">a</a>
+                <a href="map.html">b</a>
+                <a href="gallery.html">c</a>
+            </div>
+        </div>
+        <div class="nav-item">
+            <a href="gallery.html">갤러리</a>
+            <div class="submenu">
+                <a href="idea.html">a</a>
+                <a href="map.html">b</a>
+                <a href="gallery.html">c</a>
+            </div>
+        </div>
+        <div class="nav-item">
+            <a href="contact.html">문의</a>
+            <div class="submenu">
+                <a href="idea.html">a</a>
+                <a href="map.html">b</a>
+                <a href="gallery.html">c</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section>
+            <h2>환영합니다</h2>
+            <p>공통 스타일 시트(style.css)를 여러 HTML 문서에서 함께 사용하는 예제 사이트입니다.</p>
+        </section>
+
+        <section>
+            <h2>마우스 이벤트 체험</h2>
+            <p>아래 박스에 마우스를 올렸다가 밖으로 이동해 보세요.</p>
+            <div id="box" class="mouse-box" data-hover-image="../img/pexels-erwin-bosman-118283-36927967.jpg">여기에 마우스를 올려 보세요!</div>
+        </section>
+
+        <section>
+            <h2>프로젝트 아이디어</h2>
+            <p>이 사이트의 뼈대 위에 어떤 웹사이트를 만들 것인지 정리했습니다.</p>
+            <a href="idea.html" class="button">아이디어</a>
+        </section>
+
+        <section>
+            <h2>페이지 안내</h2>
+            <ul>
+                <li><a href="info.html">소개</a> - 사이트 소개와 페이지 구성표</li>
+                <li><a href="gallery.html">갤러리</a> - 이미지와 비디오</li>
+                <li><a href="contact.html">문의</a> - 문의 양식</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>외부 링크</h2>
+            <ul>
+                <li><a href="mailto:woohyeuk11@gmail.com">이메일 링크</a></li>
+                <li><a href="https://github.com/2k-c-a" target="_blank" rel="noopener">sns 링크</a></li>
+                <li><a href="map.html">지도 링크</a></li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 모바일 웹 실습</p>
+    </footer>
+
+
+    <script src="../js/mouse.js" defer></script>
+    <script src="../js/bgm.js" defer></script>
+
+</body>
+</html>

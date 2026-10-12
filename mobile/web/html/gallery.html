@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>갤러리</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon-16.png">
+    <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+</head>
+<body>
+    <header>
+        <h1>모바일 웹 실습</h1>
+    </header>
+
+    <nav>
+        <div class="nav-item">
+            <a href="index.html">홈</a>
+            <div class="submenu">
+                <a href="idea.html">a</a>
+                <a href="map.html">b</a>
+                <a href="gallery.html">c</a>
+            </div>
+        </div>
+        <div class="nav-item">
+            <a href="info.html">소개</a>
+            <div class="submenu">
+                <a href="idea.html">a</a>
+                <a href="map.html">b</a>
+                <a href="gallery.html">c</a>
+            </div>
+        </div>
+        <div class="nav-item">
+            <a href="gallery.html" class="active">갤러리</a>
+            <div class="submenu">
+                <a href="idea.html">a</a>
+                <a href="map.html">b</a>
+                <a href="gallery.html">c</a>
+            </div>
+        </div>
+        <div class="nav-item">
+            <a href="contact.html">문의</a>
+            <div class="submenu">
+                <a href="idea.html">a</a>
+                <a href="map.html">b</a>
+                <a href="gallery.html">c</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section>
+            <h2>이미지</h2>
+            <figure>
+                <img src="../img/morskie-oko-tatry_1204-510.avif" alt="타트라 산맥의 모르스키에 오코 호수">
+                <figcaption>모르스키에 오코 (타트라 산맥)</figcaption>
+            </figure>
+        </section>
+
+        <section>
+            <h2>비디오</h2>
+            <!-- 비디오를 넣을 자리: <video> 안에 <source src="../video/파일명.mp4" type="video/mp4"> 를 넣으세요 -->
+            <div class="video-wrap">
+                <video controls>
+                    <!-- <source src="../video/파일명.mp4" type="video/mp4"> -->
+                    비디오를 지원하지 않는 브라우저입니다.
+                </video>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 모바일 웹 실습</p>
+    </footer>
+    <script src="../js/mouse.js" defer></script>
+</body>
+</html>

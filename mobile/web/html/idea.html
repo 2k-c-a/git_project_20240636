@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>프로젝트 아이디어</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon-16.png">
+    <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
 </head>
 <body>
     <header>
@@ -16,10 +16,38 @@
     </header>
 
     <nav>
-        <a href="index.html">홈</a>
-        <a href="info.html">소개</a>
-        <a href="gallery.html">갤러리</a>
-        <a href="contact.html">문의</a>
+        <div class="nav-item">
+            <a href="index.html">홈</a>
+            <div class="submenu">
+                <a href="idea.html">a</a>
+                <a href="map.html">b</a>
+                <a href="gallery.html">c</a>
+            </div>
+        </div>
+        <div class="nav-item">
+            <a href="info.html">소개</a>
+            <div class="submenu">
+                <a href="idea.html">a</a>
+                <a href="map.html">b</a>
+                <a href="gallery.html">c</a>
+            </div>
+        </div>
+        <div class="nav-item">
+            <a href="gallery.html">갤러리</a>
+            <div class="submenu">
+                <a href="idea.html">a</a>
+                <a href="map.html">b</a>
+                <a href="gallery.html">c</a>
+            </div>
+        </div>
+        <div class="nav-item">
+            <a href="contact.html">문의</a>
+            <div class="submenu">
+                <a href="idea.html">a</a>
+                <a href="map.html">b</a>
+                <a href="gallery.html">c</a>
+            </div>
+        </div>
     </nav>
 
     <main>
@@ -282,5 +310,6 @@
     <footer>
         <p>&copy; 2026 모바일 웹 실습</p>
     </footer>
+    <script src="../js/mouse.js" defer></script>
 </body>
 </html>
