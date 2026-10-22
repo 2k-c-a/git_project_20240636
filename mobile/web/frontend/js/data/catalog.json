@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "algorithms": [
+    {
+      "id": "bfs",
+      "title": "너비 우선 탐색 (BFS)",
+      "examples": [
+        {
+          "id": "diamond",
+          "title": "마름모 그래프 (A→B, A→C, B→D, C→D)",
+          "path": "bfs/diamond.json",
+          "languages": ["python", "cpp", "java", "kotlin", "rust", "c", "javascript"]
+        },
+        {
+          "id": "cycle",
+          "title": "순환이 있는 그래프 (C→A로 되돌아감)",
+          "path": "bfs/cycle.json",
+          "languages": ["python", "cpp", "java", "kotlin", "rust", "c", "javascript"]
+        },
+        {
+          "id": "disconnected",
+          "title": "도달할 수 없는 노드가 있는 그래프",
+          "path": "bfs/disconnected.json",
+          "languages": ["python", "cpp", "java", "kotlin", "rust", "c", "javascript"]
+        }
+      ]
+    },
+    {
+      "id": "dfs",
+      "title": "깊이 우선 탐색 (DFS, 재귀)",
+      "examples": [
+        {
+          "id": "basic",
+          "title": "트리 모양 그래프 (A→B, C / B→D, E / C→F)",
+          "path": "dfs/basic.json",
+          "languages": ["python", "cpp", "java", "kotlin", "rust", "c", "javascript"]
+        },
+        {
+          "id": "cycle",
+          "title": "순환이 있는 그래프 (C→A로 되돌아감)",
+          "path": "dfs/cycle.json",
+          "languages": ["python", "cpp", "java", "kotlin", "rust", "c", "javascript"]
+        },
+        {
+          "id": "disconnected",
+          "title": "도달할 수 없는 노드가 있는 그래프",
+          "path": "dfs/disconnected.json",
+          "languages": ["python", "cpp", "java", "kotlin", "rust", "c", "javascript"]
+        }
+      ]
+    },
+    {
+      "id": "binary-search",
+      "title": "이분 탐색",
+      "examples": [
+        {
+          "id": "basic",
+          "title": "기본: 값을 찾는 경우",
+          "path": "binary-search/basic.json",
+          "languages": ["python", "cpp", "java", "kotlin", "rust", "c", "javascript"]
+        },
+        {
+          "id": "empty",
+          "title": "빈 배열",
+          "path": "binary-search/empty.json",
+          "languages": ["python", "cpp", "java", "kotlin", "rust", "c", "javascript"]
+        },
+        {
+          "id": "single",
+          "title": "원소가 하나",
+          "path": "binary-search/single.json",
+          "languages": ["python", "cpp", "java", "kotlin", "rust", "c", "javascript"]
+        },
+        {
+          "id": "not-found",
+          "title": "찾는 값이 없는 경우",
+          "path": "binary-search/not-found.json",
+          "languages": ["python", "cpp", "java", "kotlin", "rust", "c", "javascript"]
+        },
+        {
+          "id": "duplicates",
+          "title": "같은 값이 여러 개",
+          "path": "binary-search/duplicates.json",
+          "languages": ["python", "cpp", "java", "kotlin", "rust", "c", "javascript"]
+        }
+      ]
+    },
+    {
+      "id": "bubble-sort",
+      "title": "버블 정렬",
+      "examples": [
+        {
+          "id": "basic",
+          "title": "기본 (5, 1, 4, 2, 8)",
+          "path": "bubble-sort/basic.json",
+          "languages": ["python", "cpp", "java", "kotlin", "rust", "c", "javascript"]
+        },
+        {
+          "id": "empty",
+          "title": "빈 배열",
+          "path": "bubble-sort/empty.json",
+          "languages": ["python", "cpp", "java", "kotlin", "rust", "c", "javascript"]
+        },
+        {
+          "id": "single",
+          "title": "원소가 하나",
+          "path": "bubble-sort/single.json",
+          "languages": ["python", "cpp", "java", "kotlin", "rust", "c", "javascript"]
+        },
+        {
+          "id": "sorted",
+          "title": "이미 정렬된 배열",
+          "path": "bubble-sort/sorted.json",
+          "languages": ["python", "cpp", "java", "kotlin", "rust", "c", "javascript"]
+        },
+        {
+          "id": "negative-duplicates",
+          "title": "음수와 같은 값이 있는 배열",
+          "path": "bubble-sort/negative-duplicates.json",
+          "languages": ["python", "cpp", "java", "kotlin", "rust", "c", "javascript"]
+        }
+      ]
+    }
+  ]
+}

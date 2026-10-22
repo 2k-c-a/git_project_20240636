@@ -1,0 +1,6 @@
+# Python 3.12.10에서 설치·실행을 확인한 직접 의존성. 간접 의존성은 pip가 결정한다.
+fastapi==0.143.0
+uvicorn[standard]==0.54.0
+supabase==2.32.0
+python-dotenv==1.2.4
+httpx==0.28.1
