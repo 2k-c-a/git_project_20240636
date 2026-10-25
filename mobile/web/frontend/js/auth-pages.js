@@ -3,6 +3,7 @@
 
 import { ApiError, createApiClient } from './api.js';
 import * as auth from './auth.js';
+import { createAuthSubmitHandler } from './auth-submit.js';
 import {
     GENERIC_MESSAGE, NOT_CONFIGURED_MESSAGE, readCallbackError, safeReturnPath, validateNickname,
 } from './auth-forms.js';
@@ -56,10 +57,6 @@ function setBusy(form, busy) {
     form.setAttribute('aria-busy', String(busy));
 }
 
-function clearPasswords(form) {
-    for (const input of form.querySelectorAll('input[type="password"]')) input.value = '';
-}
-
 function queryNext() {
     return safeReturnPath(new URLSearchParams(window.location.search).get('next'));
 }
@@ -84,21 +81,11 @@ function warnOrigin(state) {
 
 /** 폼 제출 공통 처리: 중복 제출 방지, 오류 표시, 끝나면 비밀번호 비우기. */
 function onSubmit(form, messageEl, handler) {
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        showMessage(messageEl, '');
-        // 비활성화된 입력은 FormData에서 빠지므로 값을 먼저 읽는다.
-        const data = new FormData(form);
-        setBusy(form, true);
-        try {
-            await handler(data);
-        } catch (error) {
-            showMessage(messageEl, error instanceof ApiError ? describeApiError(error) : error?.message || GENERIC_MESSAGE);
-        } finally {
-            clearPasswords(form);
-            setBusy(form, false);
-        }
-    });
+    form.addEventListener('submit', createAuthSubmitHandler({
+        form, message: messageEl, handler,
+        showMessage: (element, value, kind) => showMessage(element,
+            value instanceof Error ? (value instanceof ApiError ? describeApiError(value) : value.message || GENERIC_MESSAGE) : value, kind),
+    }));
 }
 
 async function afterLogin(next) {
@@ -172,6 +159,7 @@ async function initReset() {
             }
             updateForm.hidden = true;
             $('#reset-updated').hidden = false;
+            $('#reset-updated').focus();
         });
         return;
     }

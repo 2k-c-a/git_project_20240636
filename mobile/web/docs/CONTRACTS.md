@@ -769,6 +769,7 @@ TraceStep {
 
 ## 7. 인증·프로필 정책
 
+- 사이트 회원은 이메일 주소·비밀번호·닉네임으로 가입한다. Supabase 서비스 계정이나 대시보드 로그인은 요구하지 않는다. 프로젝트 설정은 개발자/운영자의 책임이다.
 - 가입·확인·로그인·세션 갱신·로그아웃·복구는 브라우저의 Supabase Auth SDK가 처리한다. FastAPI는 Bearer 토큰을 검증하기만 한다.
 - 토큰 검증은 Supabase `get_user(jwt)`로 한다. decode만 하고 신뢰하지 않는다. 토큰이 없으면 `unauthenticated`(401), 만료·위조·검증 거부는 `invalid_token`(401), 검증 서비스가 응답하지 않아 판정할 수 없으면 `service_unavailable`(503)이다. 판정 불가를 허용으로 처리하지 않는다.
 - 인증 설정(URL·Publishable key)이 없으면 인증이 필요한 API는 `auth_not_configured`(503)를 반환한다.
@@ -834,7 +835,7 @@ TraceStep {
 | `DELETE /api/posts/{id}` | 필수 | `If-Match` | 204 (본문 없음) |
 
 - 읽기 API(`GET /api/posts`, `GET /api/posts/{id}`)는 인증이 필요 없다. `Authorization` 헤더가 와도 무시한다.
-- `/api/me`와 `/api/me/profile` 응답은 `Cache-Control: no-store`다. 인증 헤더가 없는 요청과 설정이 없는 서버의 처리 순서는 인증 설정 없음(503 `auth_not_configured`) → 헤더 없음(401 `unauthenticated`) → 형식·검증 실패(401 `invalid_token`) → 판정 불가(503 `service_unavailable`)이다. 헤더 형식은 `Bearer <토큰>`(스킴은 대소문자 무시, 토큰은 공백 없이 4096자 이하)이다.
+- `/api/me`와 `/api/me/profile` 응답은 `Cache-Control: no-store`다. 인증 헤더가 없는 요청과 설정이 없는 서버의 처리 순서는 인증 설정 없음(503 `auth_not_configured`) → 헤더 없음(401 `unauthenticated`) → 형식·검증 실패(401 `invalid_token`) → 판정 불가(503 `service_unavailable`)이다. 헤더 형식은 `Bearer <토큰>`(스킴은 대소문자 무시, 토큰은 공백·제어 문자·비 ASCII 없이 4096자 이하)이다.
 - `Profile` = `{id, nickname, created_at, updated_at}`
 - `PostSummary` = `{id, title, author_display_name, algorithm_id, created_at, version}` (본문·이메일 없음)
 - `PostDetail` = `PostSummary` + `{author_id, body, updated_at}`. `author_id`는 화면이 소유자 버튼을 보일지 정하는 데 쓰며, 서버·DB의 권한 검사를 대체하지 않는다. posts의 SELECT가 공개이므로 이 값은 이미 직접 Data API로 조회할 수 있다.
@@ -1069,3 +1070,24 @@ RLS는 두 테이블에서 켜져 있고 정책은 정확히 아래 7개다(`aut
 - trace 계약을 바꾸면 이 문서, DESIGN.md §6, 검증기(`trace-validator.js`), 모든 fixture, 소비 코드(재생기·렌더러)를 같은 작업에서 고친다. 호환되지 않는 변경은 `schemaVersion`을 올린다.
 - API·DB 계약을 바꾸면 이 문서, DESIGN.md §7·§8, migration, 스키마·서비스 코드, 프런트엔드, 테스트를 함께 점검한다.
 - 03단계는 실제 JSON·타입에 맞춰 §3~§5를, 08단계는 실제 DB 제약과 RPC 인자·결과를(§10에 확정했다), 11단계는 실제 오류·cursor·ETag 동작을 이 문서에 보완한다. DB 제약이나 RPC를 바꾸면 migration, `supabase/tests`, 이 문서의 §10, API 코드를 같은 작업에서 고친다.
+
+
+### 10단계 회원 양식 동작 보완 (2026-10-25)
+
+- 회원 양식은 값을 읽은 후 비밀번호 입력란을 즉시 비우고, 요청 대기 중 재진입을 막는다. 종료 시 원래 비활성 상태를 복원한다. 응답 유실·실패에 자동 재제출하지 않는다.
+- 양식 안에 있던 포커스는 입력을 비활성화하기 전에 진행 상태 영역으로 이동한다. 종료 시에도 그 영역에 포커스가 있고 양식이 표시 중일 때만 원래 입력으로 복원한다. 사용자가 다른 곳으로 이동했거나 성공 패널로 옮긴 포커스는 유지한다.
+- PKCE 교환이 오류 없이 끝나더라도 사용자와 access token이 담긴 세션이 없으면 완료로 표시하지 않고 invalid_code로 안내한다. 토큰 자체의 신뢰 판단은 기존 서버 검증 계약을 따른다.
+
+
+### 11단계 입력 경계 보완 (2026-10-25)
+
+- cursor 시각의 UTC 변환 결과가 지원 범위를 벗어나면 DB 조회 전에 400 invalid_cursor로 거부한다. 내부 날짜 변환 예외를 500으로 노출하지 않는다.
+- POST/PATCH의 title·body에 PostgreSQL UTF-8 text로 저장할 수 없는 고립 surrogate가 있으면 기존 NUL 규칙과 같이 422 validation_error로 거부한다. JSON의 올바른 surrogate 쌍은 파싱 후 일반 유니코드 문자이므로 허용한다.
+
+
+### 12단계 게시판 화면 요청 관리 (2026-10-25)
+
+- 새 글 작성은 대기 중 중복 submit 이벤트도 취소한다. 성공 응답 전에는 초안을 비우지 않으며, 실패한 쓰기를 자동 재전송하지 않는다.
+- 계정 변경 시 프로필 조회는 이전 요청을 취소하고 세대가 맞는 응답만 반영한다. 로그아웃 뒤 늦은 응답·이전 요청 오류는 무시한다. 반환된 사용자 ID가 현재 계정과 다르면 작성자 안내에 사용하지 않는다.
+- 인라인 재로그인은 회원 양식과 같은 중복 제출·비밀번호 즉시 정리 정책을 사용한다. 재로그인 성공 시 원래 글 양식/상태 안내로 포커스를 이동하며, 작성 중인 글은 별도 저장소나 다른 페이지로 보내지 않는다.
+- 제목·본문의 NUL·고립 surrogate는 해당 필드 오류로 표시한다. 정상 이모지와 줄바꿈은 허용한다. 최종 권한과 입력 판정은 API·RLS가 한다.

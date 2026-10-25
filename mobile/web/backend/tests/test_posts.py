@@ -4,6 +4,7 @@ DB 경계(`PostStore`)는 메모리 가짜(tests/fake_posts.py)로 바꾼다. �
 """
 
 import json
+import base64
 from datetime import timezone
 
 import pytest
@@ -57,6 +58,29 @@ def test_empty_list(auth_client):
     assert response.status_code == 200
     assert response.json() == {"items": [], "next_cursor": None}
     assert response.headers["cache-control"] == "no-store"
+
+
+@pytest.mark.parametrize("created", ["0001-01-01T00:00:00+14:00", "9999-12-31T23:59:59-14:00"])
+def test_out_of_range_cursor_is_400_without_database_access(auth_client, post_store, created):
+    payload = {"c": created, "i": MISSING_ID, "a": None}
+    cursor = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
+    error_of(auth_client.get(POSTS, params={"cursor": cursor}), 400, "invalid_cursor")
+    assert post_store.calls == []
+
+
+@pytest.mark.parametrize("method", ["POST", "PATCH"])
+@pytest.mark.parametrize("field", ["title", "body"])
+@pytest.mark.parametrize("value", ["bad\ud800text", "bad\udffftext"])
+def test_unpaired_surrogate_is_422_before_database_access(auth_client, post_store, store, method, field, value):
+    make_profile(store)
+    payload = {"title": "제목", "body": "본문", field: value}
+    # JSON 이스케이프로 전송하면 서버의 JSON 파서가 고립 surrogate를 문자열로 만들 수 있다.
+    path = POSTS if method == "POST" else f"{POSTS}/{MISSING_ID}"
+    response = auth_client.request(method, path, content=json.dumps(payload), headers={
+        **bearer(TOKEN_A), "Content-Type": "application/json", "If-Match": f'"post-{MISSING_ID}-v1"',
+    })
+    error_of(response, 422, "validation_error")
+    assert post_store.calls == []
 
 
 def test_list_is_newest_first_without_body_or_email(auth_client, post_store):

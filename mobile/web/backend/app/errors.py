@@ -14,6 +14,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
+from .security import security_headers
 
 logger = logging.getLogger("app.errors")
 
@@ -104,6 +105,7 @@ def error_response(request: Request, status_code: int, code: str, message: str, 
     response = JSONResponse({"error": body}, status_code=status_code, headers=headers or {})
     response.headers[REQUEST_ID_HEADER] = request_id
     response.headers.setdefault("Cache-Control", "no-store")
+    response.headers.update(security_headers())
     return response
 
 

@@ -24,7 +24,7 @@ test('초안 검사: 제목은 앞뒤 공백을 지우고 1~100자, 본문은 �
     for (const [draft, field] of [
         [{ title: '', body: 'b' }, 'title'], [{ title: '   ', body: 'b' }, 'title'], [{ title: 'x'.repeat(TITLE_MAX + 1), body: 'b' }, 'title'],
         [{ title: 't', body: '' }, 'body'], [{ title: 't', body: ' \n ' }, 'body'], [{ title: 't', body: 'x'.repeat(BODY_MAX + 1) }, 'body'],
-        [{ title: 't', body: 'b', algorithmId: 'quick' }, 'algorithmId'], [{ title: 't\u0000', body: 'b' }, 'body'], [{}, 'title'], [null, 'body'],
+        [{ title: 't', body: 'b', algorithmId: 'quick' }, 'algorithmId'], [{ title: 't\u0000', body: 'b' }, 'title'], [{}, 'title'], [null, 'body'],
     ]) {
         const result = validateDraft(draft);
         assert.equal(result.ok, false, JSON.stringify(draft));

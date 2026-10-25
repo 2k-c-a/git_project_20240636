@@ -24,13 +24,13 @@ supabase/
 
 migration은 **이 순서대로** 적용합니다. 비어 있는 프로젝트(`public.profiles`, `public.posts`가 없는 곳)를 전제로 하며, 되돌리는(down) migration은 만들지 않았습니다.
 
-**파일 사이에 열린 틈이 없습니다.** 파일은 하나씩 따로 적용될 수 있고(SQL Editor, 파일마다 별도 트랜잭션인 CLI) Supabase는 새 테이블에 `anon`·`authenticated` 권한을 기본으로 줍니다. 그래서 테이블을 만드는 첫 파일(`…0001`)이 **같은 트랜잭션 안에서** RLS를 켜고 기본 권한을 모두 회수합니다. 첫 파일만 적용한 상태에서는 비회원·회원 모두 읽기·쓰기가 막혀 있고(`service_role`만 접근), `…0002`가 필요한 권한·정책·트리거를 열며, `…0003`이 RPC를 추가하고, migration 4(`202610160001_…`)가 RPC를 거치지 않은 직접 수정·삭제를 거부합니다(RPC를 부를 때만 트랜잭션 안에서 설정값 `app.post_rpc`를 켜는 방식이며 SECURITY DEFINER는 쓰지 않습니다). 함수를 만드는 파일도 같은 파일 안에서 기본 실행 권한을 회수합니다. 이 규칙은 `after_migration_1.sql`·`after_migration_2.sql`(적용 직후 상태)과 `tests/db`의 정적 테스트가 지킵니다.
+**파일 사이에 열린 틈이 없습니다.** 파일은 하나씩 따로 적용될 수 있고(SQL Editor, 파일마다 별도 트랜잭션인 CLI) 새 테이블에 `anon`·`authenticated` 권한을 기본으로 주는 Supabase 프로젝트도 있습니다. 그래서 테이블을 만드는 첫 파일(`…0001`)이 **같은 트랜잭션 안에서** RLS를 켜고 기본 권한을 모두 회수합니다. 첫 파일만 적용한 상태에서는 비회원·회원 모두 읽기·쓰기가 막혀 있고(`service_role`만 접근), `…0002`가 필요한 권한·정책·트리거를 열며, `…0003`이 RPC를 추가하고, migration 4(`202610160001_…`)가 RPC를 거치지 않은 직접 수정·삭제를 거부합니다(RPC를 부를 때만 트랜잭션 안에서 설정값 `app.post_rpc`를 켜는 방식이며 SECURITY DEFINER는 쓰지 않습니다). 함수를 만드는 파일도 같은 파일 안에서 기본 실행 권한을 회수합니다. 이 규칙은 `after_migration_1.sql`·`after_migration_2.sql`(적용 직후 상태)과 `tests/db`의 정적 테스트가 지킵니다.
 
 ## 새 프로젝트에 적용하기
 
 ### 1. 적용 전 점검 (기존 데이터를 지우지 않기 위해)
 
-Supabase 대시보드의 SQL Editor에서 먼저 아래를 실행해 **아무것도 나오지 않는지** 확인합니다.
+Supabase 대시보드의 SQL Editor에서 먼저 아래를 실행해 **첫 조회의 profiles/posts가 모두 null이고, 둘째 조회가 0행인지** 확인합니다. 첫 조회는 null 값이어도 결과 행 하나를 반환합니다.
 
 ```sql
 select to_regclass('public.profiles') as profiles, to_regclass('public.posts') as posts;
@@ -42,7 +42,7 @@ select proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
 
 ### 2. 적용
 
-아래 중 하나를 고릅니다. 세 파일은 각각 하나의 트랜잭션으로 실행되어야 하며(중간에 실패하면 그 파일은 아무것도 남기지 않음) 순서를 지켜야 합니다.
+아래 중 하나를 고릅니다. 네 파일은 각각 하나의 트랜잭션으로 실행되어야 하며(중간에 실패하면 그 파일은 아무것도 남기지 않음) 순서를 지켜야 합니다.
 
 - **SQL Editor**: 파일을 순서대로 하나씩 붙여 넣어 실행합니다.
 - **psql**: `psql "<접속 문자열>" -v ON_ERROR_STOP=1 --single-transaction -f supabase/migrations/<파일>`을 파일마다 실행합니다. 접속 문자열에는 비밀번호가 들어 있으므로 문서·Git·로그에 남기지 않습니다.
@@ -109,3 +109,6 @@ npm run test:db
 **`202610160001_posts_rpc_only.sql`(migration 4)은 아직 이 프로젝트에 적용하지 않았다.** 적용하기 전에는 작성자가 Data API로 PATCH/DELETE를 직접 보내 version 검사를 우회할 수 있다. SQL Editor에서 이 파일만 한 번 실행하면 되며(앞의 세 migration은 다시 실행하지 않는다), 적용 뒤 `posts`에 `posts_00_require_rpc` 트리거가 보이고 RPC가 계속 `ok`를 돌려주는지 확인한다.
 
 `webproject` (`wchcazqtlvczctugnkst`)에 세 migration의 정의를 SQL Editor에서 순서대로 하나의 트랜잭션으로 적용했다. `profiles` RLS/정책 3개, `posts` RLS/정책 4개, 두 RPC의 SECURITY INVOKER를 카탈로그 조회로 확인했다. CLI migration 이력은 등록하지 않았으므로 같은 SQL을 다시 push/실행하지 않는다. 실제 사용자 A/B의 Auth·Data API 통합 검증은 남아 있다. 상세 결과와 환경 제한은 [ACCEPTANCE.md](../docs/ACCEPTANCE.md)의 Supabase 실제 프로젝트 설정 기록을 참고한다.
+
+
+실제 적용 전에는 기존 객체를 비교하며, 기존 개발 프로젝트의 적용 기록이 새로 clone한 사람의 프로젝트에도 적용됐다는 의미는 아닙니다. API URL·Publishable key·Auth 이메일 설정은 개발자 본인이 별도로 준비합니다. 서버 소스 공유는 DB 복제가 아닙니다.

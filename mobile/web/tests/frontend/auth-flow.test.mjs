@@ -102,7 +102,9 @@ test('콜백 주소의 오류(만료 링크 등)를 쿼리와 해시에서 읽�
 test('API 오류 문구: 서버의 한국어 메시지를 쓰되 장애·인증 오류는 따로 안내한다', () => {
     assert.equal(describeApiError(new ApiError({ status: 422, code: 'validation_error', message: '입력값을 확인해 주세요.', fields: { nickname: '닉네임은 2~20자여야 합니다.' } })), '닉네임은 2~20자여야 합니다.');
     assert.match(describeApiError(new ApiError({ status: 503, code: 'service_unavailable', message: 'x' })), /일시적으로/);
-    assert.match(describeApiError(new ApiError({ status: 503, code: 'auth_not_configured', message: 'x' })), /설정/);
+    const unavailable = describeApiError(new ApiError({ status: 503, code: 'auth_not_configured', message: 'x' }));
+    assert.match(unavailable, /관리자/);
+    assert.doesNotMatch(unavailable, /Supabase|Publishable|APP_ORIGIN/);
     assert.match(describeApiError(new ApiError({ status: 401, code: 'invalid_token', message: 'x' })), /다시 로그인/);
     assert.equal(describeApiError(new ApiError({ status: 0, code: 'network_error', message: '서버에 연결하지 못했습니다.' })), '서버에 연결하지 못했습니다.');
     assert.equal(describeApiError(new Error('boom')), GENERIC_MESSAGE);
@@ -354,6 +356,13 @@ test('콜백 코드 교환: 성공하면 사용자, 만료·다른 브라우저�
     assert.equal(ok.sdk.callsOf('exchangeCodeForSession').length, 1);
 });
 
+test('콜백의 성공 응답에 사용할 세션이 없으면 로그인을 완료했다고 처리하지 않는다', async () => {
+    for (const data of [{}, { user: SESSION.user }, { session: { user: SESSION.user } }, { session: { access_token: 'token' } }]) {
+        const { service } = await makeService({ exchange: { data, error: null } });
+        await assert.rejects(service.exchangeCode('code-1'), (error) => error instanceof AuthFailure && error.code === 'invalid_code');
+    }
+});
+
 test('metadata 닉네임: 규칙에 맞을 때만 돌려주고 id·권한 필드는 읽지 않는다', async () => {
     const valid = await makeService({ session: SESSION });
     assert.equal(await valid.service.getMetadataNickname(), '학생');
@@ -538,11 +547,4 @@ test('프런트엔드 소스는 비밀번호·토큰을 console이나 저장소�
         assert.ok(!/console\./.test(text), `${name}: console 사용`);
         assert.ok(!/sessionStorage\.setItem\([^)]*(password|token)/i.test(text), name);
     }
-});
-
-test('폼 값은 입력을 비활성화하기 전에 읽는다(비활성 입력은 FormData에서 빠진다)', () => {
-    const source = readFileSync(join(FRONTEND, 'js/auth-pages.js'), 'utf8');
-    const submit = source.slice(source.indexOf('function onSubmit'), source.indexOf('async function afterLogin'));
-    assert.ok(submit.indexOf('new FormData(form)') > 0);
-    assert.ok(submit.indexOf('new FormData(form)') < submit.indexOf('setBusy(form, true)'));
 });

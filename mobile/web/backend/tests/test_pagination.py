@@ -31,6 +31,12 @@ def test_other_timezone_is_normalized_to_utc():
     assert decode_cursor(encode_cursor(seoul, POST_ID, None), None).created_at_text == "2026-10-14T05:30:00.123456+00:00"
 
 
+@pytest.mark.parametrize("created", ["0001-01-01T00:00:00+14:00", "9999-12-31T23:59:59-14:00"])
+def test_cursor_whose_utc_conversion_overflows_is_invalid(created):
+    with pytest.raises(InvalidCursor):
+        decode_cursor(make({"c": created, "i": POST_ID, "a": None}), None)
+
+
 def test_cursor_is_url_safe_and_short():
     cursor = encode_cursor(WHEN, POST_ID, "binary-search")
     assert len(cursor) <= MAX_CURSOR_LENGTH

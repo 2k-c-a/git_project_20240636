@@ -71,7 +71,7 @@ def _clean_title(value: Any, fields: dict[str, str]) -> str | None:
         fields["title"] = MESSAGE_NULL if value is None else MESSAGE_TEXT
         return None
     title = value.strip()
-    if "\x00" in title:
+    if _invalid_text(title):
         fields["title"] = MESSAGE_NUL
     elif not 1 <= len(title) <= TITLE_MAX:
         fields["title"] = MESSAGE_TITLE
@@ -84,13 +84,18 @@ def _clean_body(value: Any, fields: dict[str, str]) -> str | None:
     if not isinstance(value, str):
         fields["body"] = MESSAGE_NULL if value is None else MESSAGE_TEXT
         return None
-    if "\x00" in value:
+    if _invalid_text(value):
         fields["body"] = MESSAGE_NUL
     elif not 1 <= len(value) <= BODY_MAX or not value.strip():
         fields["body"] = MESSAGE_BODY
     else:
         return value
     return None
+
+
+def _invalid_text(value: str) -> bool:
+    # PostgreSQL UTF-8 text에 저장할 수 없는 NUL·고립 surrogate는 SDK 호출 전에 거부한다.
+    return "\x00" in value or any(0xD800 <= ord(ch) <= 0xDFFF for ch in value)
 
 
 def _clean_algorithm(value: Any, fields: dict[str, str]) -> bool:

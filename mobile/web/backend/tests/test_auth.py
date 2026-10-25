@@ -31,6 +31,24 @@ def test_malformed_authorization_is_401_invalid_token(auth_client, verifier, hea
     assert verifier.calls == []
 
 
+@pytest.mark.parametrize("token", ["abc\x00def", "abc\x1fdef", "abc\x7fdef", "abc\x80def", "토큰"])
+def test_non_printable_or_non_ascii_bearer_is_rejected_before_verification(token):
+    from app.dependencies import extract_bearer_token
+
+    with pytest.raises(ApiError) as failure:
+        extract_bearer_token(f"Bearer {token}")
+    assert (failure.value.status_code, failure.value.code) == (401, "invalid_token")
+
+
+@pytest.mark.parametrize("token", [b"abc\x00def", b"abc\x7fdef", b"abc\x80def"])
+def test_invalid_bearer_bytes_never_reach_auth_or_profile_store(auth_client, verifier, store, token):
+    response = auth_client.get("/api/me", headers=[(b"Authorization", b"Bearer " + token)])
+    assert response.status_code == 401
+    assert error_of(response)["code"] == "invalid_token"
+    assert verifier.calls == []
+    assert store.calls == []
+
+
 @pytest.mark.parametrize("scheme", ["Bearer", "bearer", "BEARER"])
 def test_scheme_is_case_insensitive(auth_client, scheme):
     response = auth_client.get("/api/me", headers={"Authorization": f"{scheme} {TOKEN_A}"})

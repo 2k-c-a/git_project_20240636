@@ -78,7 +78,7 @@ const MESSAGES = {
 };
 export const NETWORK_MESSAGE = '서버에 연결하지 못했습니다. 네트워크를 확인하고 잠시 후 다시 시도해 주세요.';
 export const GENERIC_MESSAGE = '요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.';
-export const NOT_CONFIGURED_MESSAGE = '회원 기능이 아직 설정되지 않았습니다. 서버 설정(Supabase URL·Publishable key·APP_ORIGIN)을 확인해 주세요.';
+export const NOT_CONFIGURED_MESSAGE = '지금은 회원 기능을 사용할 수 없습니다. 잠시 뒤 다시 시도하거나 관리자에게 문의해 주세요.';
 
 /**
  * Supabase Auth 오류를 사용자에게 보여줄 한국어 문구로 바꾼다.

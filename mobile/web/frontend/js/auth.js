@@ -212,7 +212,11 @@ export function createAuthService({ loadConfig, createClient, storage = null, pa
         try {
             const { data, error } = await sdk.auth.exchangeCodeForSession(code);
             if (error) throw error;
-            return publicUser(data?.session?.user ?? data?.user);
+            const user = publicUser(data?.session?.user);
+            if (!user || !data?.session?.access_token) {
+                throw new AuthFailure('invalid_code', '로그인을 확인하지 못했습니다. 메일의 링크를 같은 브라우저에서 다시 열거나 링크를 다시 요청해 주세요.');
+            }
+            return user;
         } catch (error) {
             throw fail(error);
         }

@@ -194,7 +194,10 @@ async function main() {
     });
 
     if (auth) {
-        setupRelogin(relogin, auth, () => dispatch({ type: 'relogged' }));
+        setupRelogin(relogin, auth, () => {
+            dispatch({ type: 'relogged' });
+            status.focus();
+        });
         onAuthChange(auth, (next) => {
             user = next;
             render();

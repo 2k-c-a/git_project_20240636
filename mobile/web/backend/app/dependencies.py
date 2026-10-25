@@ -43,7 +43,8 @@ def extract_bearer_token(authorization: str | None) -> str:
         raise unauthenticated()
     scheme, _, rest = authorization.strip().partition(" ")
     token = rest.strip()
-    if scheme.lower() != "bearer" or not token or any(ch.isspace() for ch in token) or len(token) > MAX_TOKEN_LENGTH:
+    # HTTP 헤더에 넣을 수 없는 제어 문자·비 ASCII는 외부 서비스를 부르기 전에 잘못된 토큰으로 거부한다.
+    if scheme.lower() != "bearer" or not token or any(not 33 <= ord(ch) <= 126 for ch in token) or len(token) > MAX_TOKEN_LENGTH:
         raise invalid_token()
     return token
 

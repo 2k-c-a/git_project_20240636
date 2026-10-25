@@ -52,7 +52,7 @@ def decode_cursor(cursor: str, algorithm: str | None) -> CursorPosition:
         raise InvalidCursor("타입")
     try:
         position = CursorPosition(_normalize(datetime.fromisoformat(created)), str(UUID(post_id)))
-    except ValueError:
+    except (ValueError, OverflowError):
         raise InvalidCursor("값") from None
     if cursor_algorithm != algorithm:
         raise InvalidCursor("필터")

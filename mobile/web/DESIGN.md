@@ -91,6 +91,8 @@ VisuAlgo는 실제 학습 사이트 `https://visualgo.net/en/dfsbfs`를 기준�
 
 ### 회원가입과 로그인
 
+이용자는 사이트에서 이메일 주소·비밀번호·닉네임으로 가입한다. Supabase 서비스 계정은 이용자 가입 조건이 아니다. Supabase 프로젝트는 개발자/운영자가 준비하며, Supabase Auth는 이메일 인증을 처리하는 내부 인프라다.
+
 가입 폼 → 이메일·비밀번호·닉네임 검증 → Supabase Auth 가입 → 이메일 확인 대기 안내 → 확인 링크 → 인증 결과 확인 → 로그인 → 게시판 작성 가능.
 
 - 이메일 확인 전 세션이 없을 수 있으므로 가입 성공을 로그인 성공으로 처리하지 않는다.
@@ -468,3 +470,10 @@ Supabase HTTP Data API를 쓰는 현재 설계에는 PostgreSQL Session Pooler�
 ## 언어 확장 정책 (2026-10-16)
 
 표시 순서는 **Python → C++ → Java → Kotlin → Rust → C → JavaScript**이며 일곱 언어 모두 네 알고리즘의 16개 예제에서 선택할 수 있다. 기본 언어는 Python이고 언어 전환 시 현재 단계와 시각화 상태를 유지한다. C++17·Java·Kotlin/JVM·Rust 코드를 제공한다. 각 언어의 한국어 설명과 eventId별 강조 줄을 함께 관리하며 코드 변경 시 contentVersion을 올린다. 실제 실행 검증 여부와 도구 환경의 제한은 docs/ACCEPTANCE.md에 기록한다. 과거 단계별 검증 기록은 당시 이력으로 보존한다.
+
+
+### 현재 구현과 공유 준비 상태 (2026-10-25)
+
+실제 콘텐츠는 네 알고리즘·16예제·Python/C++/Java/Kotlin/Rust/C/JavaScript 일곱 언어다. 초기 MVP 범위와 과거 기록은 당시 기준으로 보존한다. 이메일 회원 화면·프로필·게시판 API/화면과 CSP가 구현되어 있으며 현재 결과는 README·docs/TEST_RESULTS.md를 따른다. 이용자에게 Supabase 서비스 계정을 요구하지 않는다.
+
+새 환경 설치·로컬 학습 실행을 비밀 파일 없는 복사본에서 재현했다. 실제 Supabase A/B·현재 CSP의 Auth/지도·실기기 검증과 기존 사진·음악 등의 재배포 권리 확인은 남아 있다. 공개 배포는 하지 않으며, GitHub 반영은 별도 요청 때 수행한다. 외부 코드/자산은 docs/THIRD_PARTY.md를 따른다.

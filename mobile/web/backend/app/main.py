@@ -14,6 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from .config import AppConfig, ConfigHolder
 from .dependencies import Services
 from .errors import RequestIdMiddleware, register_error_handlers
+from .security import SecurityHeadersMiddleware
 from .routers import config as config_router
 from .routers import me as me_router
 from .routers import posts as posts_router
@@ -67,6 +68,7 @@ def create_app(
         posts=post_store or SupabasePostStore(shared_client),
     )
     app.add_middleware(RequestIdMiddleware)
+    app.add_middleware(SecurityHeadersMiddleware)
     register_error_handlers(app)
 
     @app.get("/", include_in_schema=False)

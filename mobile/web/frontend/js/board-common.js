@@ -4,6 +4,7 @@
 import { ApiError, createApiClient } from './api.js';
 import { hasStoredSession } from './auth-menu.js';
 import { ALGORITHMS, algorithmLabel, classifyError } from './board-state.js';
+import { createAuthSubmitHandler } from './auth-submit.js';
 
 /** 요소 만들기. children은 문자열(텍스트) 또는 노드. */
 export function h(tag, attrs = {}, ...children) {
@@ -84,23 +85,16 @@ export function onAuthChange(auth, listener) {
  */
 export function setupRelogin(form, auth, onDone) {
     const message = form.querySelector('[data-relogin-message]');
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const data = new FormData(form);
-        setBusy(form, true);
-        say(message, '');
-        try {
+    form.addEventListener('submit', createAuthSubmitHandler({
+        form, message,
+        showMessage: (element, value, kind) => say(element, value instanceof Error ? value.message : value, kind),
+        handler: async (data) => {
             await auth.signIn({ email: data.get('email'), password: data.get('password') });
             form.reset();
             form.hidden = true;
-            onDone();
-        } catch (error) {
-            say(message, error?.message || '로그인하지 못했습니다.', 'error');
-        } finally {
-            for (const input of form.querySelectorAll('input[type="password"]')) input.value = '';
-            setBusy(form, false);
-        }
-    });
+            await onDone();
+        },
+    }));
 }
 
 /** 오류를 화면 안내로 바꾸는 얇은 도우미. ApiError가 아니면 일반 오류로 본다. */

@@ -9,6 +9,7 @@ import {
     bootBoard, fillAlgorithmSelect, formatDate, h, onAuthChange, say, setBusy, setupRelogin, showFieldErrors,
 } from './board-common.js';
 import { createRequestGate } from './request-gate.js';
+import { createProfileRefresh, exclusiveWrite } from './board-requests.js';
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -112,21 +113,15 @@ async function main() {
         }
     }
 
-    async function refreshProfile() {
-        nickname = null;
-        if (user) {
-            try {
-                nickname = (await api.get('/api/me')).data.nickname;
-            } catch (error) {
-                writeGate.textContent = classifyError(error, {}).message;
-                return;
-            }
-        }
-        renderGate();
-    }
+    const loadProfile = createProfileRefresh({
+        api,
+        onLoading: () => { nickname = null; renderGate(); },
+        onLoaded: (profile) => { nickname = profile?.nickname ?? null; renderGate(); },
+        onError: (error) => { form.hidden = true; writeGate.textContent = classifyError(error).message; },
+    });
+    const refreshProfile = () => loadProfile(user);
 
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault();
+    form.addEventListener('submit', exclusiveWrite(async () => {
         const draft = { title: form.elements.title.value, body: form.elements.body.value, algorithmId: form.elements.algorithm.value };
         const checked = validateDraft(draft);
         showFieldErrors(form, checked.ok ? {} : checked.fields, { algorithm: 'algorithmId' });
@@ -155,10 +150,16 @@ async function main() {
         } finally {
             setBusy(form, false);
         }
-    });
+    }));
 
     if (auth) {
-        setupRelogin(relogin, auth, () => say(formMessage, '다시 로그인했습니다. 내용을 확인하고 다시 올려 주세요.', 'ok'));
+        setupRelogin(relogin, auth, async () => {
+            await refreshProfile();
+            say(formMessage, '다시 로그인했습니다. 내용을 확인하고 다시 올려 주세요.', 'ok');
+            const target = form.hidden ? writeGate : formMessage;
+            target.setAttribute('tabindex', '-1');
+            target.focus();
+        });
         onAuthChange(auth, (next) => {
             const changed = next?.id !== user?.id;
             user = next;

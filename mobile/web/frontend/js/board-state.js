@@ -25,7 +25,11 @@ export function validateDraft(draft) {
     if ([...title].length < 1 || [...title].length > TITLE_MAX) fields.title = `제목은 1~${TITLE_MAX}자여야 합니다.`;
     if ([...body].length < 1 || [...body].length > BODY_MAX || body.trim() === '') fields.body = `본문은 1~${BODY_MAX.toLocaleString('ko-KR')}자여야 하며 공백만으로 이루어질 수 없습니다.`;
     if (algorithmId !== null && !algorithmLabel(algorithmId)) fields.algorithmId = '알 수 없는 알고리즘입니다.';
-    if (/\u0000/.test(title + body)) fields.body ??= '쓸 수 없는 문자가 있습니다.';
+    for (const [field, value] of [['title', title], ['body', body]]) {
+        if ([...value].some((char) => char === '\u0000' || (char.codePointAt(0) >= 0xD800 && char.codePointAt(0) <= 0xDFFF))) {
+            fields[field] ??= '쓸 수 없는 문자가 있습니다.';
+        }
+    }
     return Object.keys(fields).length ? { ok: false, fields } : { ok: true, value: { title, body, algorithm_id: algorithmId } };
 }
 
