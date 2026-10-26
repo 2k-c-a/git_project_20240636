@@ -8,6 +8,8 @@ import { join } from 'node:path';
 
 import { generate } from '../../scripts/generate-traces.mjs';
 import { EXAMPLES, LANGUAGES, buildBundle, buildCatalog, formatBundle, formatCatalog } from '../../scripts/trace-builders.mjs';
+import { GRID_EXAMPLES, LEARNING_EXAMPLES } from '../../scripts/learning-traces.mjs';
+import { ALGORITHM_IDS } from '../../frontend/js/trace-contract.js';
 import { DATA_DIR } from './helpers/load-fixture.mjs';
 
 const read = (relative) => readFileSync(join(DATA_DIR, relative), 'utf8');
@@ -34,7 +36,7 @@ test('generate()가 임시 폴더에 만든 파일이 data 폴더와 같다(스�
     const dir = mkdtempSync(join(tmpdir(), 'generated-'));
     try {
         const written = generate(dir);
-        assert.equal(written.length, EXAMPLES.length + 1);
+        assert.equal(written.length, EXAMPLES.length + GRID_EXAMPLES.length + LEARNING_EXAMPLES.length + 1);
         for (const relative of written) assert.equal(readFileSync(join(dir, relative), 'utf8'), read(relative), relative);
     } finally {
         rmSync(dir, { recursive: true, force: true });
@@ -43,9 +45,10 @@ test('generate()가 임시 폴더에 만든 파일이 data 폴더와 같다(스�
 
 test('계획한 경계 예제가 모두 있고, 모든 예제가 Python·C++·C·JavaScript 코드를 가진다', () => {
     const catalog = JSON.parse(read('catalog.json'));
-    assert.deepEqual(catalog.algorithms.map((algorithm) => algorithm.id), ['bfs', 'dfs', 'binary-search', 'bubble-sort']);
+    assert.deepEqual(catalog.algorithms.map((algorithm) => algorithm.id), [...ALGORITHM_IDS]);
     for (const algorithm of catalog.algorithms) {
-        assert.deepEqual(algorithm.examples.map((example) => example.id).sort(), [...REQUIRED[algorithm.id]].sort(), algorithm.id);
+        const required = [...(REQUIRED[algorithm.id] ?? []), ...[...GRID_EXAMPLES, ...LEARNING_EXAMPLES].filter(item => item.algorithmId === algorithm.id).map(item => item.id)];
+        assert.deepEqual(algorithm.examples.map((example) => example.id).sort(), required.sort(), algorithm.id);
         for (const example of algorithm.examples) {
             assert.deepEqual(example.languages, [...LANGUAGES], `${algorithm.id}/${example.id}`);
             const bundle = JSON.parse(read(example.path));

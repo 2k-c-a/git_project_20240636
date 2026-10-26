@@ -407,6 +407,16 @@ select t.run('authenticated', :'uid_a', format($q$insert into public.posts (auth
 select set_config('app.post_rpc', '', true);
 select t.run('authenticated', :'uid_b', format($q$update public.posts set title = title where author_id = %L$q$, :'uid_b'), '42501:rpc_required', '게이트 복구: 닫으면 직접 UPDATE가 다시 거부된다');
 
+savepoint learning_algorithm_tags;
+-- 새 학습 알고리즘 태그도 동일한 사용자 RLS와 CHECK를 거친다.
+select t.run('authenticated', :'uid_a', format($q$insert into public.posts (author_id, title, body, algorithm_id) values (%L, '학습 확장', '본문', 'union-find')$q$, :'uid_a'), 'ok', '새 알고리즘 태그 union-find 허용');
+select t.run('authenticated', :'uid_a', format($q$insert into public.posts (author_id, title, body, algorithm_id) values (%L, '학습 확장', '본문', 'dijkstra')$q$, :'uid_a'), 'ok', '새 알고리즘 태그 dijkstra 허용');
+select t.run('authenticated', :'uid_a', format($q$insert into public.posts (author_id, title, body, algorithm_id) values (%L, '학습 확장', '본문', 'knapsack')$q$, :'uid_a'), 'ok', '새 알고리즘 태그 knapsack 허용');
+select t.run('authenticated', :'uid_a', format($q$insert into public.posts (author_id, title, body, algorithm_id) values (%L, '학습 확장', '본문', 'topological-sort')$q$, :'uid_a'), 'ok', '새 알고리즘 태그 topological-sort 허용');
+select t.run('authenticated', :'uid_a', format($q$insert into public.posts (author_id, title, body, algorithm_id) values (%L, '학습 확장', '본문', 'two-pointers')$q$, :'uid_a'), 'ok', '새 알고리즘 태그 two-pointers 허용');
+
+rollback to savepoint learning_algorithm_tags;
+
 -- =============================================================================================
 -- 7. 계정 삭제(관리자)는 프로필과 글을 함께 지운다
 -- =============================================================================================

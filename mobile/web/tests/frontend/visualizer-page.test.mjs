@@ -1,6 +1,7 @@
 // 시각화 페이지 전체(visualizer.html의 요소 + visualizer.js)를 가짜 DOM으로 구동해, 버튼과 언어 선택 상자를 실제 이벤트로 조작한다.
 // 가짜 DOM은 브라우저의 포커스 규칙을 흉내 내지만 레이아웃·스크린 리더는 없다. 실제 브라우저 확인은 docs/ACCEPTANCE.md에 따로 적는다.
 import test from 'node:test';
+import { algorithmInfo } from '../../frontend/js/algorithm-info.js';
 import assert from 'node:assert/strict';
 
 import { readFileSync } from 'node:fs';
@@ -194,13 +195,14 @@ async function settled(page) {
 }
 const stepAll = (page) => { for (let i = 0; i < 60 && !page.el('btn-next').disabled; i += 1) page.el('btn-next').click(); };
 
-test('선택 상자: 알고리즘 4개와 그 알고리즘의 예제를 보여 주고, 처음에는 BFS의 첫 예제이다', async () => {
+test('선택 상자: 알고리즘 9개와 그 알고리즘의 예제를 보여 주고, 처음에는 BFS의 첫 예제이다', async () => {
     const page = await bootPage();
     assert.deepEqual(optionTexts(page.el('algo-select')), [
         ['bfs', '너비 우선 탐색 (BFS)'], ['dfs', '깊이 우선 탐색 (DFS, 재귀)'], ['binary-search', '이분 탐색'], ['bubble-sort', '버블 정렬'],
+        ['union-find', '유니온 파인드'], ['dijkstra', '다익스트라 (배열 기반)'], ['knapsack', '0/1 배낭 DP'], ['topological-sort', '위상 정렬 (Kahn)'], ['two-pointers', '투 포인터 (연속 구간 합)'],
     ]);
     assert.equal(page.el('algo-select').value, 'bfs');
-    assert.deepEqual(optionTexts(page.el('example-select')).map(([id]) => id), ['diamond', 'cycle', 'disconnected']);
+    assert.deepEqual(optionTexts(page.el('example-select')).map(([id]) => id), ['diamond', 'cycle', 'disconnected', 'grid-maze', 'grid-open', 'grid-unreachable']);
     assert.equal(page.el('example-select').value, 'diamond');
     assert.equal(page.el('algo-select').disabled, false);
     assert.equal(page.el('example-select').disabled, false);
@@ -275,6 +277,7 @@ test('모든 알고리즘·예제·언어를 선택 상자로 열어 처음부�
                 click(page, 'btn-reset');
                 const bundle = JSON.parse(readFileSync(new URL(`../../frontend/js/data/${example.path}`, import.meta.url), 'utf8'));
                 assert.equal(snapshot(page).progress, `단계 0 / ${bundle.steps.length - 1}`, `${example.path} ${language}`);
+                assert.ok(page.el('algorithm-info').textContent.includes(algorithmInfo(bundle).time), `${example.path}: 구현에 맞는 복잡도`);
                 stepAll(page);
                 const view = snapshot(page);
                 assert.equal(view.phase, '실행 끝', `${example.path} ${language}`);
@@ -284,7 +287,7 @@ test('모든 알고리즘·예제·언어를 선택 상자로 열어 처음부�
             }
         }
     }
-    assert.equal(opened, 16 * 7);
+    assert.equal(opened, 36 * 7);
     assert.deepEqual(page.errors, []);
 });
 

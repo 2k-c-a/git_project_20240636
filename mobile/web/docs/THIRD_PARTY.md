@@ -26,3 +26,14 @@
 - Google 지도는 iframe과 외부 링크로 사용한다. 지도 타일을 저장소에 복사하지 않으며 서비스 이용 조건은 별도다. 카카오·네이버 링크도 외부 서비스 링크다.
 - Python 직접 의존성은 backend/requirements.txt·requirements-dev.txt에 고정 버전으로 기록한다. 간접 의존성은 pip가 해결하므로 완전한 lockfile 재현과는 다르다.
 - Java/Kotlin/Rust/C/C++ 실행 도구·PostgreSQL은 선택 검증 도구다. 실행 파일을 저장소에 번들하지 않는다.
+
+
+## 추가 알고리즘 설명 참고
+
+알고리즘 원리·복잡도 설명의 참고 자료이며 코드를 복사한 출처가 아니다. 새 예제 데이터·유한 정수 프로그램·7개 언어 출력은 프로젝트에서 작성했다. 백준 문제 본문/입출력을 복제하지 않고 작은 자체 예제를 사용한다.
+
+- Union–Find와 역 아커만 경계: https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/UnionFind.pdf
+- Kahn 위상 순서와 선형 경계: https://algs4.cs.princeton.edu/code/edu/princeton/cs/algs4/TopologicalX.java.html
+- 0/1 배낭과 의사 다항 시간: https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/7232b0ff982f501556118a8552654762_MIT6_006S20_r19.pdf
+
+표시된 다익스트라는 우선순위 큐 구현이 아닌 배열·인접 행렬 구현이므로 그 코드에 맞는 O(V²)를 명시한다. 기존 미확인 이미지·음악 권리 문제와는 별개다.

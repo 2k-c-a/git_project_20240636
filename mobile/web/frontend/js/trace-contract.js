@@ -1,12 +1,13 @@
 // trace(실행 기록) 계약의 상수와 타입. 사람이 읽는 최종 계약은 docs/CONTRACTS.md이며,
 // 값이 다르면 문서와 이 파일을 같은 변경에서 함께 고친다.
 
+import { EXTENDED_IDS, EXTENDED_LABELS } from './learning-programs.js';
 export const SCHEMA_VERSION = 1;
 
 // 최종 표시 순서. 아직 콘텐츠가 없는 언어는 선택 목록에 넣지 않는다.
 export const LANGUAGE_ORDER = Object.freeze(['python', 'cpp', 'java', 'kotlin', 'rust', 'c', 'javascript']);
 export const LANGUAGE_IDS = LANGUAGE_ORDER;
-export const ALGORITHM_IDS = Object.freeze(['bfs', 'dfs', 'binary-search', 'bubble-sort']);
+export const ALGORITHM_IDS = Object.freeze(['bfs', 'dfs', 'binary-search', 'bubble-sort', ...EXTENDED_IDS]);
 
 /** 콘텐츠 제한(제안값). 바꾸면 CONTRACTS.md §1도 고친다. */
 export const LIMITS = Object.freeze({
@@ -18,7 +19,7 @@ export const LIMITS = Object.freeze({
     minInt: -999,
     maxInt: 999,
     maxBundleBytes: 200 * 1024,
-    maxCodeLines: 60,
+    maxCodeLines: 120,
     maxCodeLineLength: 120,
     maxNotesLength: 500,
     maxMessageLength: 200,
@@ -48,6 +49,7 @@ export const CATALOG_ALGORITHM_KEYS = Object.freeze(['id', 'title', 'examples'])
 export const CATALOG_EXAMPLE_KEYS = Object.freeze(['id', 'title', 'path', 'languages']);
 
 export const INPUT_KEYS = Object.freeze({
+    'union-find': Object.freeze(['n', 'operations']), dijkstra: Object.freeze(['n', 'edges', 'start']), knapsack: Object.freeze(['weights', 'values', 'capacity']), 'topological-sort': Object.freeze(['n', 'edges']), 'two-pointers': Object.freeze(['values', 'target']),
     bfs: Object.freeze(['directed', 'graph', 'start', 'layout']),
     dfs: Object.freeze(['directed', 'graph', 'start', 'layout']),
     'binary-search': Object.freeze(['values', 'target']),
@@ -55,6 +57,7 @@ export const INPUT_KEYS = Object.freeze({
 });
 
 export const STATE_KEYS = Object.freeze({
+    ...Object.fromEntries(EXTENDED_IDS.map(id => [id, Object.freeze(['vars'])])),
     bfs: Object.freeze(['discovered', 'processed', 'queue', 'current', 'neighbor']),
     dfs: Object.freeze(['frames', 'discovered', 'processed', 'current']),
     'binary-search': Object.freeze(['values', 'target', 'left', 'right', 'mid', 'result']),
@@ -62,6 +65,7 @@ export const STATE_KEYS = Object.freeze({
 });
 
 export const OPERATIONS = Object.freeze({
+    ...Object.fromEntries(EXTENDED_IDS.map(id => [id, Object.freeze(Object.keys(EXTENDED_LABELS[id]))])),
     bfs: Object.freeze(['initial', 'discover', 'enqueue', 'dequeue', 'check-neighbor', 'process', 'finish']),
     dfs: Object.freeze(['initial', 'call', 'discover', 'check-neighbor', 'process', 'return']),
     'binary-search': Object.freeze(['initial', 'compute-mid', 'compare', 'set-left', 'set-right', 'found', 'finish']),
@@ -76,6 +80,7 @@ export const LANGUAGE_LABELS = Object.freeze({ python: 'Python', cpp: 'C++', jav
  * "방금 실행한 연산: <이름>" 형태로 표시한다.
  */
 export const OPERATION_LABELS = Object.freeze({
+    ...Object.fromEntries(EXTENDED_IDS.map(id => [id, Object.freeze(EXTENDED_LABELS[id])])),
     bfs: Object.freeze({
         initial: '실행 전', discover: '발견 기록', enqueue: '큐에 넣기', dequeue: '큐에서 꺼내기',
         'check-neighbor': '이웃 검사', process: '처리 완료', finish: '종료',
@@ -95,6 +100,7 @@ export const OPERATION_LABELS = Object.freeze({
 
 /** 마지막 step의 operation은 이 중 하나여야 한다. */
 export const TERMINAL_OPERATIONS = Object.freeze({
+    ...Object.fromEntries(EXTENDED_IDS.map(id => [id, Object.freeze(['finish'])])),
     bfs: Object.freeze(['finish']),
     dfs: Object.freeze(['return']),
     'binary-search': Object.freeze(['found', 'finish']),
@@ -103,6 +109,7 @@ export const TERMINAL_OPERATIONS = Object.freeze({
 
 /** 마지막 step 이외에는 나타날 수 없는 operation. DFS의 return은 중간에도 쓰이므로 비어 있다. */
 export const TERMINAL_ONLY_OPERATIONS = Object.freeze({
+    ...Object.fromEntries(EXTENDED_IDS.map(id => [id, Object.freeze(['finish'])])),
     bfs: Object.freeze(['finish']),
     dfs: Object.freeze([]),
     'binary-search': Object.freeze(['found', 'finish']),

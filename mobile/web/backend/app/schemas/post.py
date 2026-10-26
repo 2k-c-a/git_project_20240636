@@ -14,7 +14,7 @@ from pydantic import BaseModel
 
 TITLE_MAX = 100
 BODY_MAX = 10_000
-ALGORITHM_IDS = ("bfs", "dfs", "binary-search", "bubble-sort")
+ALGORITHM_IDS = ("bfs", "dfs", "binary-search", "bubble-sort", "union-find", "dijkstra", "knapsack", "topological-sort", "two-pointers")
 MAX_VERSION = 2**31 - 1  # DB의 integer
 
 _FIELD_NAMES = ("title", "body", "algorithm_id")

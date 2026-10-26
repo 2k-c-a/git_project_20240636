@@ -176,3 +176,8 @@ cd mobile/web/backend
 - `/docs`, `/openapi.json`도 공개됩니다. 로컬 개발용이며 공개 배포는 범위에 없습니다.
 - 매우 긴 URL 경로(수천 자)를 보내면 Windows에서 정적 파일 조회가 500을 반환합니다. 파일 내용이 노출되지는 않습니다.
 - 테스트 중 `starlette.testclient`가 httpx 사용이 deprecated라는 경고를 냅니다. 현재 버전 조합에서는 동작하며, 의존성을 올릴 때 확인이 필요합니다.
+
+
+## 새 학습 알고리즘 게시판 분류
+
+학습 화면의 9개 알고리즘과 맞춰 게시판도 union-find·dijkstra·knapsack·topological-sort·two-pointers를 추가 허용합니다. 기존 Supabase에 migration 1~4가 적용되어 있다면 `supabase/migrations/202610250001_learning_algorithms.sql`만 새로 적용하세요. 이 파일은 기존 데이터·RLS·소유권·RPC 정책을 바꾸지 않고 CHECK 허용 ID를 늘립니다. 이번 개발에서는 실제 프로젝트에 적용하지 않았습니다. 학습 화면은 Supabase 없이 사용할 수 있습니다.

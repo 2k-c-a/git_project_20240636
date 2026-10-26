@@ -180,7 +180,7 @@ test('codes: 지원하지 않는 언어, 빈 codes, 설명 누락을 거부한�
 test('codes: 코드 줄 수·길이·탭 문자 제한을 검사한다', () => {
     const tooMany = fixture();
     tooMany.codes.python.lines = Array.from({ length: LIMITS.maxCodeLines + 1 }, (_, i) => `x = ${i}`);
-    assertRejected(tooMany, /코드는 1~60줄/);
+    assertRejected(tooMany, /코드는 1~120줄/);
 
     const tooLong = fixture();
     tooLong.codes.python.lines[2] = 'x'.repeat(LIMITS.maxCodeLineLength + 1);
@@ -196,7 +196,7 @@ test('codes: 코드 줄 수·길이·탭 문자 제한을 검사한다', () => {
 
     const noLines = fixture();
     noLines.codes.python.lines = [];
-    assertRejected(noLines, /코드는 1~60줄/);
+    assertRejected(noLines, /코드는 1~120줄/);
 });
 
 // ---------- 줄 매핑(R4) ----------
@@ -915,7 +915,7 @@ test('validateDataDir: 실제 data 폴더의 등록된 예제가 모두 통과�
     const { errors, checked } = await validateDataDir(DATA_DIR);
     assert.deepEqual(errors, []);
     // catalog에 등록된 모든 예제(알고리즘 4개, 예제 16개)가 세 언어를 가지고 통과한다.
-    assert.equal(checked.length, 16);
+    assert.equal(checked.length, 36);
     assert.ok(checked.every((item) => sameLanguages(item.languages)), '모든 예제가 세 언어를 가진다');
     assert.deepEqual(checked.find((item) => item.path === 'bfs/diamond.json'), { path: 'bfs/diamond.json', contentVersion: 'bfs-diamond-v4', steps: 22, languages: ['c', 'cpp', 'java', 'javascript', 'kotlin', 'python', 'rust'] });
     for (const algorithmId of ['bfs', 'dfs', 'binary-search', 'bubble-sort']) assert.ok(checked.some((item) => item.path.startsWith(`${algorithmId}/`)), algorithmId);
@@ -954,7 +954,7 @@ test('validateDataDir: bundle이 잘못되면 오류 이유와 함께 보고한�
     bundle.steps[3].lines.python = [11];
     writeFileSync(join(dir, 'bfs/diamond.json'), JSON.stringify(bundle));
     const { errors, checked } = await validateDataDir(dir);
-    assert.equal(checked.length, 15, '고장 난 예제 하나만 빠지고 나머지 15개는 통과로 센다');
+    assert.equal(checked.length, 35, '고장 난 예제 하나만 빠지고 나머지 15개는 통과로 센다');
     assert.ok(errors.length >= 1 && errors.every((message) => message.startsWith('bfs/diamond.json: ')), '오류는 모두 고장 난 파일의 것이다');
     assert.match(errors[0], /^bfs\/diamond\.json: steps\[3\]\.lines\.python\[0\]: 줄 번호 11가/);
 });
@@ -977,7 +977,7 @@ test('validate-traces CLI: 통과하면 종료 코드 0, 실패하면 1이다', 
     const ok = run();
     assert.equal(ok.status, 0, ok.stdout + ok.stderr);
     assert.match(ok.stdout, /✔ bfs\/diamond\.json - bfs-diamond-v4, 22 steps, 언어: c, cpp, java, javascript, kotlin, python, rust/);
-    assert.match(ok.stdout, /결과: 통과 16개, 오류 0개/);
+    assert.match(ok.stdout, /결과: 통과 36개, 오류 0개/);
 
     const dir = copyDataDir();
     const bundle = fixture();
@@ -986,5 +986,5 @@ test('validate-traces CLI: 통과하면 종료 코드 0, 실패하면 1이다', 
     const bad = run(dir);
     assert.equal(bad.status, 1);
     assert.match(bad.stdout, /✖ bfs\/diamond\.json: steps\[2\]\.operation: 알 수 없는 operation "teleport"/);
-    assert.match(bad.stdout, /통과 15개, 오류 1개/);
+    assert.match(bad.stdout, /통과 35개, 오류 1개/);
 });

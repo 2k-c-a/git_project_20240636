@@ -338,7 +338,7 @@ const OTHER_DECLARATION = /^(\}|\} else \{|else:|def .+|function .+|void .+|int 
 const catalogExamples = () => JSON.parse(readFileSync(join(DATA_DIR, 'catalog.json'), 'utf8')).algorithms.flatMap((algorithm) => algorithm.examples.map((example) => ({ algorithmId: algorithm.id, exampleId: example.id })));
 const EXAMPLES_BY_ALGORITHM = [...catalogExamples().reduce((groups, item) => groups.set(item.algorithmId, [...(groups.get(item.algorithmId) ?? []), item]), new Map())];
 
-for (const [algorithmId, items] of EXAMPLES_BY_ALGORITHM.filter(([id]) => id !== 'bfs')) {
+for (const [algorithmId, items] of EXAMPLES_BY_ALGORITHM.filter(([id]) => Object.hasOwn(OTHER_SOURCE_TABLES, id))) {
     const table = OTHER_SOURCE_TABLES[algorithmId];
 
     test(`[${algorithmId}] 강조되는 줄의 소스 문장이 operation의 의미와 맞다(모든 예제의 모든 단계, 세 언어)`, async () => {

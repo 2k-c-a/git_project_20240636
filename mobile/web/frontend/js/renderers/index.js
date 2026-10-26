@@ -2,6 +2,8 @@
 // 새 알고리즘은 renderer 함수 두 개(상태, 범례)와 문구를 여기에 등록하면 되며 재생기·재생 상태 코드는 바꾸지 않는다.
 import { renderBinarySearch, renderBinarySearchLegend, renderBubbleSort, renderBubbleSortLegend } from './array.js';
 import { renderDfsGraph, renderDfsLegend, renderGraph, renderLegend } from './graph.js';
+import { renderGrid, renderGridLegend, renderLearning, renderLearningLegend } from './learning.js';
+import { EXTENDED_IDS } from '../learning-programs.js';
 
 /**
  * @typedef {Object} AlgorithmRenderer
@@ -13,7 +15,8 @@ import { renderDfsGraph, renderDfsLegend, renderGraph, renderLegend } from './gr
 
 /** @type {Readonly<Record<string, AlgorithmRenderer>>} */
 export const RENDERERS = Object.freeze({
-    bfs: Object.freeze({ render: renderGraph, renderLegend, heading: '그래프와 상태', legendTitle: '범례: 노드 모양과 표시 보는 법' }),
+    ...Object.fromEntries(EXTENDED_IDS.map(id => [id, Object.freeze({ render: (root, input, state, context) => renderLearning(root, id, input, state, context), renderLegend: renderLearningLegend, heading: '자료구조와 상태', legendTitle: '범례: 표와 노드 표시 보는 법' })])),
+    bfs: Object.freeze({ render: (root, input, state, context) => input.grid ? renderGrid(root, input, state) : renderGraph(root, input, state, context), renderLegend: (root, input) => input?.grid ? renderGridLegend(root) : renderLegend(root), heading: '그래프와 상태', legendTitle: '범례: 노드 모양과 표시 보는 법' }),
     dfs: Object.freeze({ render: renderDfsGraph, renderLegend: renderDfsLegend, heading: '그래프와 호출 스택', legendTitle: '범례: 노드 모양과 표시 보는 법' }),
     'binary-search': Object.freeze({ render: renderBinarySearch, renderLegend: renderBinarySearchLegend, heading: '배열과 상태', legendTitle: '범례: 칸 모양과 표시 보는 법' }),
     'bubble-sort': Object.freeze({ render: renderBubbleSort, renderLegend: renderBubbleSortLegend, heading: '배열과 상태', legendTitle: '범례: 칸 모양과 표시 보는 법' }),

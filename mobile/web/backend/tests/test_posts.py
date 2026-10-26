@@ -60,6 +60,17 @@ def test_empty_list(auth_client):
     assert response.headers["cache-control"] == "no-store"
 
 
+@pytest.mark.parametrize("algorithm", ["union-find", "dijkstra", "knapsack", "topological-sort", "two-pointers"])
+def test_new_learning_algorithm_can_be_tagged_and_filtered(auth_client, store, algorithm):
+    make_profile(store)
+    response = create(auth_client, {"title": "새 알고리즘", "body": "학습 질문", "algorithm_id": algorithm})
+    assert response.status_code == 201
+    assert response.json()["algorithm_id"] == algorithm
+    items = auth_client.get(POSTS, params={"algorithm": algorithm}).json()["items"]
+    assert len(items) == 1
+    assert items[0]["algorithm_id"] == algorithm
+
+
 @pytest.mark.parametrize("created", ["0001-01-01T00:00:00+14:00", "9999-12-31T23:59:59-14:00"])
 def test_out_of_range_cursor_is_400_without_database_access(auth_client, post_store, created):
     payload = {"c": created, "i": MISSING_ID, "a": None}

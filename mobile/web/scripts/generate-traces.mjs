@@ -10,6 +10,8 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { EXAMPLES, buildBundle, buildCatalog, formatBundle, formatCatalog } from './trace-builders.mjs';
+import { GRID_EXAMPLES, LEARNING_EXAMPLES, buildLearningBundle } from './learning-traces.mjs';
+const ALL_EXAMPLES = [...EXAMPLES, ...GRID_EXAMPLES, ...LEARNING_EXAMPLES];
 
 const DEFAULT_DIR = join(resolve(dirname(fileURLToPath(import.meta.url)), '..'), 'frontend/js/data');
 
@@ -19,7 +21,7 @@ const DEFAULT_DIR = join(resolve(dirname(fileURLToPath(import.meta.url)), '..'),
  */
 function removeStale(outDir, written) {
     const keep = new Set(written);
-    for (const algorithmId of new Set(EXAMPLES.map((example) => example.algorithmId))) {
+    for (const algorithmId of new Set(ALL_EXAMPLES.map((example) => example.algorithmId))) {
         const dir = join(outDir, algorithmId);
         if (!existsSync(dir)) continue;
         for (const name of readdirSync(dir)) {
@@ -38,6 +40,8 @@ export function generate(outDir) {
     };
     write('catalog.json', formatCatalog(buildCatalog()));
     for (const example of EXAMPLES) write(`${example.algorithmId}/${example.id}.json`, formatBundle(buildBundle(example)));
+    for (const example of GRID_EXAMPLES) write(`${example.algorithmId}/${example.id}.json`, formatBundle(buildBundle(example)));
+    for (const example of LEARNING_EXAMPLES) write(`${example.algorithmId}/${example.id}.json`, formatBundle(buildLearningBundle(example)));
     removeStale(outDir, written);
     return written;
 }

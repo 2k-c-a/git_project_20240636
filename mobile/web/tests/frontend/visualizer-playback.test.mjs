@@ -459,7 +459,7 @@ test('모든 알고리즘·예제를 자동 재생으로 끝까지 볼 수 있�
             played += 1;
         }
     }
-    assert.equal(played, 16);
+    assert.equal(played, 36);
     assert.deepEqual(page.errors, []);
 });
 

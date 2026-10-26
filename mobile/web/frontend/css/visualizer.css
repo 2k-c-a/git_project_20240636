@@ -704,3 +704,26 @@ main.wide {
         min-height: 40px;
     }
 }
+
+
+/* 알고리즘 비용과 확장 학습 화면 */
+.algorithm-info { padding: 12px 16px; margin: 12px 0; border-left: 4px solid #2f6f9f; background: #edf5fa; overflow-wrap: anywhere; }
+.algorithm-info h4 { margin: 0 0 8px; }
+.algorithm-info p { margin: 5px 0; }
+.learning-scroll { max-width: 100%; overflow-x: auto; margin: 12px 0; }
+.learning-table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+.learning-table caption { text-align: left; font-weight: bold; padding: 6px 0; }
+.learning-table th, .learning-table td { border: 1px solid #8b9ba8; padding: 7px; text-align: center; min-width: 35px; }
+.learning-active { background: #fff0a8; color: #172e40; outline: 2px solid #725300; outline-offset: -2px; font-weight: bold; }
+.learning-graph { display: block; width: 100%; max-height: 300px; }
+.learning-graph text { font: 13px sans-serif; fill: #172e40; }
+.learning-edge-label { stroke: white; stroke-width: 4px; paint-order: stroke; }
+.learning-grid { display: grid; gap: 6px; margin: 12px 0; }
+.grid-cols-1 { grid-template-columns: 1fr; }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.learning-cell { border: 2px solid #456179; padding: 9px 4px; font-size: .8rem; overflow-wrap: anywhere; text-align: center; min-width: 0; }
+.learning-cell.wall { background: #35424c; color: white; border-style: dashed; }
+.learning-cell.path { border-style: double; border-width: 4px; background: #e8f2fc; }
+.viz-graph { min-width: 0; }

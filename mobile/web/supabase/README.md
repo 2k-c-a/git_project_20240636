@@ -42,7 +42,7 @@ select proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
 
 ### 2. 적용
 
-아래 중 하나를 고릅니다. 네 파일은 각각 하나의 트랜잭션으로 실행되어야 하며(중간에 실패하면 그 파일은 아무것도 남기지 않음) 순서를 지켜야 합니다.
+아래 중 하나를 고릅니다. 다섯 파일은 각각 하나의 트랜잭션으로 실행되어야 하며(중간에 실패하면 그 파일은 아무것도 남기지 않음) 순서를 지켜야 합니다.
 
 - **SQL Editor**: 파일을 순서대로 하나씩 붙여 넣어 실행합니다.
 - **psql**: `psql "<접속 문자열>" -v ON_ERROR_STOP=1 --single-transaction -f supabase/migrations/<파일>`을 파일마다 실행합니다. 접속 문자열에는 비밀번호가 들어 있으므로 문서·Git·로그에 남기지 않습니다.
@@ -112,3 +112,8 @@ npm run test:db
 
 
 실제 적용 전에는 기존 객체를 비교하며, 기존 개발 프로젝트의 적용 기록이 새로 clone한 사람의 프로젝트에도 적용됐다는 의미는 아닙니다. API URL·Publishable key·Auth 이메일 설정은 개발자 본인이 별도로 준비합니다. 서버 소스 공유는 DB 복제가 아닙니다.
+
+
+## 학습 알고리즘 확장 (migration 5)
+
+`202610250001_learning_algorithms.sql`은 게시글 algorithm_id 허용 목록에 union-find·dijkstra·knapsack·topological-sort·two-pointers를 추가합니다. 기존 1~4 적용 프로젝트에는 **이 새 파일만** 전체를 한 트랜잭션으로 실행합니다. 새 빈 프로젝트에는 파일명 순서로 5개를 적용합니다. 데이터·테이블을 삭제하거나 예전 파일을 다시 실행하지 않습니다. 이번 개발에서는 실제 Supabase에 적용하지 않았습니다. 학습 trace는 DB 적용 없이 사용 가능합니다.

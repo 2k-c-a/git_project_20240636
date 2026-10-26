@@ -4,6 +4,7 @@
 // 알고리즘마다 달라지는 화면(상태 그림, 범례, 제목)은 renderers/index.js의 목록에서 algorithmId로 찾아 쓰므로 이 파일은 알고리즘을 모른다.
 
 import { LANGUAGE_LABELS, OPERATION_LABELS } from './trace-contract.js';
+import { renderAlgorithmInfo } from './algorithm-info.js';
 import { updateControls, updatePlayButton, updateScrubber } from './controls.js';
 import { firstUsable, moveFocusOutOf } from './focus-guard.js';
 import { updateLanguageSelect } from './language-select.js';
@@ -22,7 +23,7 @@ function collectElements() {
         'viz-status', 'viz-status-text', 'viz-retry', 'viz-error-details', 'viz-notices', 'viz-body', 'viz-title',
         'viz-sr-progress', 'viz-operation-prefix', 'viz-operation', 'viz-message', 'code-root', 'code-notes', 'graph-root', 'legend-root',
         'btn-reset', 'btn-prev', 'btn-next', 'viz-progress', 'viz-phase', 'lang-select', 'algo-select', 'example-select',
-        'viz-state-heading', 'viz-legend-title', 'viz-live', 'btn-play', 'viz-slider', 'speed-select',
+        'viz-state-heading', 'viz-legend-title', 'viz-live', 'btn-play', 'viz-slider', 'speed-select', 'algorithm-info',
     ];
     const elements = {};
     for (const name of names) {
@@ -89,7 +90,7 @@ async function start() {
 
     const buttons = { next: els['btn-next'], prev: els['btn-prev'], reset: els['btn-reset'] };
     // 불러오는 동안 막는 조작 요소 전부(단계 버튼, 재생 버튼, 슬라이더, 속도 선택 상자)
-    const controls = [...Object.values(buttons), els['btn-play'], els['viz-slider'], els['speed-select']];
+    const controls = [...Object.values(buttons), els['btn-play'], els['viz-slider'], els['speed-select'], els['lang-select']];
     const gate = createRequestGate();
     // 자동 재생: advance는 재생 상태의 TICK 전이다. 재생 중이 아닐 때 늦게 도착한 callback은 전이가 무시한다.
     const playback = createPlayback({ advance: () => dispatch({ type: ACTIONS.TICK }), getState: () => state });
@@ -142,7 +143,8 @@ async function start() {
         state = createPlayerState(bundle, selection.languageId, { speed: speedPreference });
         els['viz-state-heading'].textContent = renderer.heading;
         els['viz-legend-title'].textContent = renderer.legendTitle;
-        renderer.renderLegend(els['legend-root']);
+        renderer.renderLegend(els['legend-root'], bundle.input);
+        renderAlgorithmInfo(els['algorithm-info'], bundle);
         els['viz-body'].hidden = false;
         render({ languageChanged: true });
         syncPlayback(playback, state); // 새 예제는 멈춘 채로 시작한다

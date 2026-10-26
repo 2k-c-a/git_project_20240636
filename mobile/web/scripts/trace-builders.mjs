@@ -11,6 +11,7 @@
 import { LANGUAGE_IDS } from '../frontend/js/trace-contract.js';
 import { CPP_CODES, CPP_EVENT_LINES } from './cpp-traces.mjs';
 import { EXTRA_CODES, EXTRA_EVENT_LINES } from './extra-language-traces.mjs';
+import { GRID_EXAMPLES, LEARNING_EXAMPLES, LEARNING_TITLES } from './learning-traces.mjs';
 
 export const LANGUAGES = LANGUAGE_IDS;
 
@@ -544,6 +545,7 @@ export function buildBundle(example) {
         // C 코드의 첫 줄 `#define N <노드 수>`만 예제에 맞춘다. 나머지 줄은 같다.
         bundleCodes.c.lines[0] = `#define N ${Object.keys(example.input.graph).length}`;
     }
+    if (example.input.grid) for (const code of Object.values(bundleCodes)) code.notes = '격자의 이동 가능한 칸을 A, B, … 순서의 노드로 바꾼 BFS 응용입니다. 거리·경로는 발견 상태에서 유도한 학습 표시이며 코드 변수는 아닙니다. 도착점 발견 뒤에도 전체 탐색을 계속합니다. ' + code.notes;
     return {
         schemaVersion: 1,
         contentVersion: `${example.algorithmId}-${example.id}-v${example.version}`,
@@ -558,11 +560,12 @@ export function buildBundle(example) {
 export function buildCatalog() {
     const algorithms = [];
     for (const algorithmId of Object.keys(ALGORITHMS)) {
-        const examples = EXAMPLES.filter((example) => example.algorithmId === algorithmId).map((example) => ({
+        const examples = [...EXAMPLES, ...GRID_EXAMPLES].filter((example) => example.algorithmId === algorithmId).map((example) => ({
             id: example.id, title: example.title, path: `${algorithmId}/${example.id}.json`, languages: [...LANGUAGES],
         }));
         algorithms.push({ id: algorithmId, title: ALGORITHMS[algorithmId].title, examples });
     }
+    for (const [id, title] of Object.entries(LEARNING_TITLES)) algorithms.push({ id, title, examples: LEARNING_EXAMPLES.filter(example => example.algorithmId === id).map(example => ({ id: example.id, title: example.title, path: `${id}/${example.id}.json`, languages: [...LANGUAGES] })) });
     return { schemaVersion: 1, algorithms };
 }
 

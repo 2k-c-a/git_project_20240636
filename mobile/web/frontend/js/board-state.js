@@ -8,6 +8,11 @@ export const ALGORITHMS = Object.freeze([
     { id: 'dfs', label: 'DFS (깊이 우선 탐색)' },
     { id: 'binary-search', label: '이분 탐색' },
     { id: 'bubble-sort', label: '버블 정렬' },
+    { id: 'union-find', label: '유니온 파인드' },
+    { id: 'dijkstra', label: '다익스트라' },
+    { id: 'knapsack', label: '0/1 배낭 DP' },
+    { id: 'topological-sort', label: '위상 정렬' },
+    { id: 'two-pointers', label: '투 포인터' },
 ]);
 
 export function algorithmLabel(id) {

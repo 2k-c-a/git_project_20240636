@@ -25,6 +25,9 @@ import {
     TERMINAL_ONLY_OPERATIONS,
     TERMINAL_OPERATIONS,
 } from './trace-contract.js';
+import { checkLearningInput, EXTENDED_IDS } from './learning-programs.js';
+import { sameLearning, validateLearning } from './learning-validator.js';
+import { gridInput } from './grid-bfs.js';
 
 const MAX_ERRORS = 50;
 const MAX_DEPTH = 12;
@@ -217,7 +220,16 @@ function checkInput(algorithmId, input, c) {
         return false;
     }
     const before = c.total;
-    if (!checkKeys(input, INPUT_KEYS[algorithmId], 'input', c)) return false;
+    if (EXTENDED_IDS.includes(algorithmId)) {
+        try { checkLearningInput(algorithmId, input); } catch (error) { c.add(error.message); }
+        return c.total === before;
+    }
+    const grid = algorithmId === 'bfs' && Object.hasOwn(input, 'grid');
+    if (!checkKeys(input, grid ? [...INPUT_KEYS[algorithmId], 'grid'] : INPUT_KEYS[algorithmId], 'input', c)) return false;
+    if (grid) {
+        try { if (!sameLearning(input, gridInput(input.grid))) c.add('input.grid: 격자의 벽·이웃 순서·좌표와 그래프가 일치하지 않습니다.'); }
+        catch (error) { c.add(`input.grid: ${error.message}`); }
+    }
 
     if (algorithmId === 'bfs' || algorithmId === 'dfs') {
         checkGraphInput(input, c);
@@ -1082,6 +1094,7 @@ function validateBubbleSort(bundle, c) {
 
 /** 알고리즘별 상태·전이 규칙 함수. 규칙 함수가 없는 알고리즘은 검증할 수 없으므로 거부한다. */
 const ALGORITHM_RULES = Object.freeze({
+    ...Object.fromEntries(EXTENDED_IDS.map(id => [id, validateLearning])),
     bfs: validateBfs,
     dfs: validateDfs,
     'binary-search': validateBinarySearch,
