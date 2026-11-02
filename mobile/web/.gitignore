@@ -11,6 +11,7 @@ __pycache__/
 # Node 도구 (프런트엔드 테스트 실행용, 현재 외부 패키지 없음)
 node_modules/
 npm-debug.log*
+.vercel/
 
 # 비밀 설정 (.env.example은 Git에 포함)
 .env

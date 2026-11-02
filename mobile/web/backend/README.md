@@ -3,7 +3,7 @@
 `../frontend`는 프런트엔드이며 기존 html, css, js, img, audio 폴더를 유지합니다.
 백엔드는 FastAPI로 작성하고 Uvicorn으로 실행합니다.
 
-이 프로젝트는 공개 배포 없이 GitHub에 소스를 공유하고 로컬에서 실행합니다. Supabase 연결은 인터넷이 필요하며, 저장소를 받은 사용자는 자신의 환경변수와 DB 설정을 준비해야 합니다. `.env`와 `.venv`는 업로드하지 않습니다.
+로컬 실행과 Vercel 배포를 지원합니다. 배포 설정은 [Vercel 배포 안내](../docs/VERCEL.md)를 참고하세요. Supabase 연결은 인터넷이 필요하며 환경변수와 DB 설정을 준비해야 합니다. `.env`와 `.venv`는 업로드하지 않습니다.
 
 ## 사이트 이용자 가입 방식
 
@@ -173,7 +173,7 @@ cd mobile/web/backend
 
 ## 알려진 제한
 
-- `/docs`, `/openapi.json`도 공개됩니다. 로컬 개발용이며 공개 배포는 범위에 없습니다.
+- `/docs`, `/openapi.json`도 공개됩니다.
 - 매우 긴 URL 경로(수천 자)를 보내면 Windows에서 정적 파일 조회가 500을 반환합니다. 파일 내용이 노출되지는 않습니다.
 - 테스트 중 `starlette.testclient`가 httpx 사용이 deprecated라는 경고를 냅니다. 현재 버전 조합에서는 동작하며, 의존성을 올릴 때 확인이 필요합니다.
 

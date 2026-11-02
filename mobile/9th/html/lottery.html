@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로또 번호 생성기</title>
+    <!-- 스타일은 css 폴더의 파일을 불러온다 -->
+    <link rel="stylesheet" href="../css/lottery.css">
+</head>
+<body>
+    <main class="container">
+        <h1>로또 번호 생성기</h1>
+        <p class="desc">버튼을 누르면 1~45 중 중복 없는 번호 6개를 뽑아요.</p>
+
+        <!-- 뽑힌 공 6개가 표시되는 곳 -->
+        <div id="balls" class="balls"></div>
+
+        <!-- 생성 횟수 표시 -->
+        <p class="count">생성 횟수: <span id="count">0</span>회</p>
+
+        <!-- 버튼 영역 -->
+        <div class="buttons">
+            <button id="drawBtn" class="btn btn-draw" type="button">번호 뽑기</button>
+            <button id="resetBtn" class="btn btn-reset" type="button">초기화</button>
+        </div>
+
+        <!-- 최근 400회 당첨 번호 출현 횟수 그래프 -->
+        <section class="stats">
+            <h2>최근 400회 번호별 출현 횟수</h2>
+            <p id="statsInfo" class="stats-info"></p>
+            <div id="chart" class="chart"></div>
+        </section>
+    </main>
+
+    <!-- 동작 코드는 javascript 폴더의 파일을 불러온다 -->
+    <script src="../javascript/lottery.js"></script>
+</body>
+</html>

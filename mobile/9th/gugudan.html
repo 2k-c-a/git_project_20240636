@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f2f1e8">
+    <meta name="description" content="원하는 단을 입력하고 곱셈의 규칙을 한눈에 확인해 보세요.">
+    <title>곱셈 실험실 | 구구단</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #182521;
+            --muted: #65726b;
+            --paper: #f2f1e8;
+            --panel: #202e28;
+            --line: #d4d8cc;
+            --lime: #d3f36b;
+            --orange: #e9785c;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            min-width: 320px;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--ink);
+            background-color: var(--paper);
+            background-image: linear-gradient(#26382d0b 1px, transparent 1px), linear-gradient(90deg, #26382d0b 1px, transparent 1px);
+            background-size: 32px 32px;
+            font-family: "Bahnschrift", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+        }
+
+        .page-shell {
+            width: min(100% - 48px, 1080px);
+            margin: 0 auto;
+            padding: 32px 0 28px;
+        }
+
+        .topline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 44px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .wordmark, .system-state, .eyebrow, .diagram-label, .diagram-caption,
+        .form-meta, .range-note, .result-index, .table-note, .footer-note {
+            font-family: "Cascadia Code", Consolas, monospace;
+            font-size: 11px;
+            letter-spacing: 0.7px;
+        }
+
+        .wordmark { font-weight: 800; }
+
+        .system-state {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+        }
+
+        .state-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #5b965d;
+            box-shadow: 0 0 0 3px #5b965d20;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(300px, 0.72fr);
+            align-items: center;
+            gap: 48px;
+            padding: 58px 0 42px;
+        }
+
+        .eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 0 18px;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .eyebrow span { color: var(--orange); }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(42px, 6vw, 72px);
+            font-weight: 800;
+            line-height: 1.06;
+        }
+
+        h1 span { color: #647b40; }
+
+        .intro {
+            max-width: 440px;
+            margin: 20px 0 0;
+            color: var(--muted);
+            font-size: 16px;
+            line-height: 1.75;
+        }
+
+        .diagram {
+            position: relative;
+            min-height: 216px;
+            padding: 22px 24px;
+            overflow: hidden;
+            color: #f4f2e8;
+            background: var(--panel);
+        }
+
+        .diagram::after {
+            position: absolute;
+            right: -40px;
+            bottom: -84px;
+            width: 210px;
+            height: 210px;
+            border: 1px solid #d3f36b35;
+            border-radius: 50%;
+            box-shadow: 0 0 0 22px #d3f36b0d, 0 0 0 44px #d3f36b0a;
+            content: "";
+        }
+
+        .diagram-label { margin: 0; color: #c1c9bd; }
+
+        .equation {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 28px 0 24px;
+            font-family: "Cascadia Code", Consolas, monospace;
+            font-size: clamp(25px, 4vw, 38px);
+            font-weight: 700;
+        }
+
+        .equation .variable { color: var(--lime); }
+        .equation .operator { color: #f18a6c; }
+
+        .diagram-rule {
+            display: flex;
+            justify-content: space-between;
+            max-width: 260px;
+            padding-top: 12px;
+            border-top: 1px solid #ffffff2a;
+            color: #c1c9bd;
+            font-family: "Cascadia Code", Consolas, monospace;
+            font-size: 10px;
+        }
+
+        .generator {
+            padding: 20px 24px 24px;
+            color: #f4f2e8;
+            background: var(--panel);
+        }
+
+        .form-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #ffffff2a;
+            color: #b9c3b9;
+        }
+
+        .form-meta strong { color: var(--lime); }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: end;
+            gap: 18px;
+            padding-top: 19px;
+        }
+
+        .field { min-width: 0; }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .input-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 360px;
+            border-bottom: 1px solid #f4f2e87a;
+        }
+
+        input {
+            width: 100%;
+            min-width: 0;
+            height: 48px;
+            padding: 0 4px;
+            border: 0;
+            border-radius: 0;
+            color: #fff;
+            background: transparent;
+            font-family: "Cascadia Code", Consolas, monospace;
+            font-size: 27px;
+            font-weight: 700;
+        }
+
+        input::placeholder { color: #849087; }
+        input:focus { outline: none; }
+        .suffix { flex: none; color: var(--lime); font-size: 14px; }
+
+        input:focus-visible, button:focus-visible {
+            outline: 3px solid var(--orange);
+            outline-offset: 4px;
+        }
+
+        button {
+            display: inline-flex;
+            min-height: 48px;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 0 18px;
+            border: 0;
+            color: var(--ink);
+            background: var(--lime);
+            font: inherit;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: background-color 160ms ease, transform 160ms ease;
+        }
+
+        button:hover { background: #e0ff88; }
+        button:active { transform: translateY(1px); }
+
+        .message {
+            min-height: 24px;
+            margin: 0;
+            padding: 8px 24px 0;
+            color: #a33b27;
+            font-size: 14px;
+        }
+
+        .result-area { padding-top: 22px; }
+
+        .result-heading {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 25px 0 14px;
+            border-bottom: 1px solid var(--ink);
+        }
+
+        h2 { margin: 0; font-size: 24px; }
+        .result-index, .table-note { color: var(--muted); }
+
+        .empty {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-height: 112px;
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .empty-mark {
+            display: grid;
+            width: 38px;
+            height: 38px;
+            flex: none;
+            place-items: center;
+            border: 1px solid #abb8a7;
+            color: #647b40;
+            font-family: "Cascadia Code", Consolas, monospace;
+            font-size: 18px;
+        }
+
+        .table-wrap { animation: arrive 260ms ease-out both; }
+        table { width: 100%; border-collapse: collapse; }
+
+        th, td {
+            width: 50%;
+            padding: 13px 16px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+        }
+
+        th {
+            color: var(--muted);
+            font-family: "Cascadia Code", Consolas, monospace;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.7px;
+        }
+
+        td:first-child {
+            color: #506159;
+            font-family: "Cascadia Code", Consolas, monospace;
+            font-size: 14px;
+        }
+
+        td:last-child {
+            color: #304d32;
+            font-family: "Cascadia Code", Consolas, monospace;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        tbody tr {
+            transition: background-color 140ms ease;
+            animation: arrive 220ms ease-out both;
+        }
+
+        tbody tr:hover { background: #e8ecd9; }
+        tbody tr:last-child td { border-bottom: 0; }
+
+        .site-footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 28px;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+        }
+
+        .footer-note { margin: 0; }
+
+        .footer-mark {
+            margin: 0;
+            color: var(--ink);
+            font-family: "Cascadia Code", Consolas, monospace;
+            font-size: 11px;
+        }
+
+        [hidden] { display: none !important; }
+
+        @keyframes arrive {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 680px) {
+            .page-shell { width: min(100% - 32px, 520px); padding-top: 20px; }
+            .hero { grid-template-columns: 1fr; gap: 28px; padding: 38px 0 28px; }
+            h1 { font-size: clamp(40px, 12vw, 58px); }
+            .diagram { min-height: 176px; }
+            .equation { margin: 20px 0; }
+            .form-row { grid-template-columns: 1fr; gap: 16px; }
+            .input-wrap { max-width: none; }
+            button { width: 100%; }
+            .result-heading { align-items: start; flex-direction: column; gap: 7px; }
+            th, td { padding: 12px 10px; }
+            .site-footer { flex-direction: column; gap: 6px; }
+        }
+
+        @media (max-width: 380px) {
+            .form-meta { align-items: start; flex-direction: column; gap: 6px; }
+            .generator { padding: 18px 16px 20px; }
+            .message { padding-right: 16px; padding-left: 16px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+    </style>
+</head>
+<body>
+    <main class="page-shell">
+        <header class="topline">
+            <div class="wordmark">MULTIPLICATION / LAB 09</div>
+            <div class="system-state"><span class="state-dot" aria-hidden="true"></span> SYSTEM READY</div>
+        </header>
+
+        <section class="hero" aria-labelledby="page-title">
+            <div>
+                <p class="eyebrow"><span>01</span> NUMBER SYSTEMS / PRACTICE</p>
+                <h1 id="page-title">곱셈의 규칙을<br><span>직접 쌓아보기.</span></h1>
+                <p class="intro">원하는 단을 입력하고, 1부터 9까지 이어지는 곱셈의 패턴을 한눈에 확인해 보세요.</p>
+            </div>
+            <div class="diagram" aria-label="곱셈 모델: 선택한 단 곱하기 1부터 9까지의 수">
+                <p class="diagram-label">MODEL / n × k</p>
+                <div class="equation" aria-hidden="true"><span class="variable">n</span><span class="operator">×</span><span>k</span><span>=</span><span class="variable">n·k</span></div>
+                <div class="diagram-rule"><span>n = SELECTED DAN</span><span>k = 01—09</span></div>
+            </div>
+        </section>
+
+        <section aria-label="구구단 입력">
+            <form class="generator" id="dan-form" novalidate>
+                <div class="form-meta"><strong>01 / INPUT</strong><span>VALID RANGE&nbsp; 02—09</span></div>
+                <div class="form-row">
+                    <div class="field">
+                        <label for="dan">계산할 단을 입력하세요</label>
+                        <div class="input-wrap">
+                            <input id="dan" name="dan" type="number" min="2" max="9" step="1" inputmode="numeric" placeholder="03" required aria-describedby="form-message">
+                            <span class="suffix">단 선택</span>
+                        </div>
+                    </div>
+                    <button type="submit"><span>계산 시작</span><span aria-hidden="true">↗</span></button>
+                </div>
+            </form>
+            <p class="message" id="form-message" role="alert" aria-live="polite"></p>
+        </section>
+
+        <section class="result-area" aria-label="구구단 결과">
+            <div class="result-heading">
+                <div>
+                    <p class="result-index">OUTPUT / 01—09</p>
+                    <h2>계산 결과</h2>
+                </div>
+                <span class="table-note">MULTIPLIER → PRODUCT</span>
+            </div>
+            <p class="empty" id="empty-state"><span class="empty-mark" aria-hidden="true">∑</span><span>단을 입력하면 계산 결과가 이곳에 표시됩니다.</span></p>
+            <section class="result" id="result" aria-live="polite" aria-atomic="true" hidden>
+            <div class="result-heading">
+                    <h2 id="result-title"></h2>
+                    <span class="table-note">1부터 9까지 순서대로 계산 완료</span>
+            </div>
+            <div class="table-wrap">
+                    <table>
+                        <thead><tr><th scope="col">OPERATION</th><th scope="col">PRODUCT</th></tr></thead>
+                    <tbody id="result-rows"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+
+        <footer class="site-footer">
+            <p class="footer-note">각 항은 선택한 단과 곱하는 수의 곱으로 계산됩니다.</p>
+            <p class="footer-mark">N × K = N·K</p>
+        </footer>
+    </main>
+
+    <script>
+        const form = document.querySelector("#dan-form");
+        const input = document.querySelector("#dan");
+        const message = document.querySelector("#form-message");
+        const result = document.querySelector("#result");
+        const resultTitle = document.querySelector("#result-title");
+        const resultRows = document.querySelector("#result-rows");
+        const emptyState = document.querySelector("#empty-state");
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const dan = Number(input.value);
+
+            if (!Number.isInteger(dan) || dan < 2 || dan > 9) {
+                message.textContent = "2부터 9 사이의 정수를 입력해 주세요.";
+                result.hidden = true;
+                emptyState.hidden = false;
+                input.focus();
+                return;
+            }
+
+            message.textContent = "";
+            resultTitle.textContent = `${dan}단`;
+            resultRows.replaceChildren(...Array.from({ length: 9 }, (_, index) => {
+                const multiplier = index + 1;
+                const row = document.createElement("tr");
+                const calculation = document.createElement("td");
+                const answer = document.createElement("td");
+                calculation.textContent = `${dan} × ${multiplier}`;
+                answer.textContent = String(dan * multiplier);
+                row.append(calculation, answer);
+                return row;
+            }));
+            result.hidden = false;
+            emptyState.hidden = true;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f2f1e8">
+    <title>벽돌깨기</title>
+    <style>
+        :root {
+            --ink: #151515;
+            --muted: #666;
+            --paper: #f4f4f4;
+            --line: #ccc;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            min-width: 320px;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--ink);
+            background-color: var(--paper);
+            background-image: linear-gradient(#0000000a 1px, transparent 1px), linear-gradient(90deg, #0000000a 1px, transparent 1px);
+            background-size: 32px 32px;
+            font-family: "Bahnschrift", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+        }
+
+        .shell {
+            width: min(100% - 32px, 960px);
+            margin: 0 auto;
+            padding: 24px 0;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--line);
+            font: 700 11px "Cascadia Code", Consolas, monospace;
+            letter-spacing: 0.6px;
+        }
+
+        .eyebrow {
+            margin: 30px 0 8px;
+            color: var(--muted);
+            font: 700 11px "Cascadia Code", Consolas, monospace;
+            letter-spacing: 0.6px;
+        }
+
+        .eyebrow span { color: var(--ink); }
+
+        h1 {
+            margin: 0 0 20px;
+            font-size: clamp(36px, 7vw, 56px);
+            line-height: 1.05;
+        }
+
+        .scoreboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            margin-bottom: 12px;
+            border-top: 1px solid var(--ink);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 50px;
+            padding-right: 16px;
+        }
+
+        .stat + .stat {
+            padding-left: 16px;
+            border-left: 1px solid var(--line);
+        }
+
+        .stat span {
+            color: var(--muted);
+            font: 10px "Cascadia Code", Consolas, monospace;
+        }
+
+        .stat strong {
+            font: 800 18px "Cascadia Code", Consolas, monospace;
+            font-variant-numeric: tabular-nums;
+        }
+
+        #game-frame {
+            overflow: hidden;
+            background: #111d19;
+        }
+
+        #game-stage {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+        }
+
+        #game-stage canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        #fallback {
+            display: grid;
+            min-height: 180px;
+            place-items: center;
+            padding: 20px;
+            color: var(--paper);
+            text-align: center;
+        }
+
+        #fallback[hidden] { display: none; }
+
+        .controls {
+            margin: 12px 0 0;
+            color: var(--muted);
+            font: 10px "Cascadia Code", Consolas, monospace;
+            text-align: center;
+        }
+
+        @media (max-width: 560px) {
+            .shell { padding-top: 16px; }
+            .eyebrow { margin-top: 24px; }
+            h1 { margin-bottom: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <header><span>KINETIC / LAB 09</span><span id="state">READY</span></header>
+        <p class="eyebrow"><span>01</span> COLLISION</p>
+        <h1>벽돌깨기</h1>
+
+        <section class="scoreboard" aria-label="게임 점수">
+            <div class="stat"><span>SCORE</span><strong id="score">0000</strong></div>
+            <div class="stat"><span>BRICKS LEFT</span><strong id="remaining">50</strong></div>
+        </section>
+
+        <section id="game-frame" aria-label="벽돌깨기 게임">
+            <div id="game-stage" role="application" aria-label="벽돌깨기 플레이 영역"></div>
+            <p id="fallback" hidden>게임 엔진을 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.</p>
+        </section>
+
+        <p class="controls">← → 또는 A / D 이동&nbsp;&nbsp; · &nbsp;&nbsp;SPACE 시작&nbsp;&nbsp; · &nbsp;&nbsp;R 다시 시작</p>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+    <script>
+        (() => {
+            const stage = document.querySelector("#game-stage");
+            const fallback = document.querySelector("#fallback");
+            const scoreOutput = document.querySelector("#score");
+            const remainingOutput = document.querySelector("#remaining");
+            const stateOutput = document.querySelector("#state");
+
+            if (!window.Phaser) {
+                fallback.hidden = false;
+                return;
+            }
+
+            // 게임 화면의 논리적 크기입니다. Phaser가 화면에 맞춰 축소합니다.
+            const WIDTH = 960;
+            const HEIGHT = 540;
+            // 현재 누르고 있는 이동 키를 저장합니다.
+            const heldKeys = new Set();
+
+            // 충돌과 점수 처리를 담당하는 게임 장면입니다.
+            class Breakout extends Phaser.Scene {
+                constructor() {
+                    super("Breakout");
+                }
+
+                // 새 게임을 시작할 때 화면과 물체를 만듭니다.
+                create() {
+                    // 한 판의 점수, 벽돌 수, 진행 상태입니다.
+                    this.score = 0;
+                    this.bricksLeft = 50;
+                    this.mode = "ready";
+                    this.physics.world.resume();
+                    this.physics.world.setBounds(18, 24, WIDTH - 36, HEIGHT - 44);
+                    this.physics.world.setBoundsCollision(true, true, true, false);
+
+                    const grid = this.add.graphics();
+                    grid.fillStyle(0x111111, 1).fillRect(0, 0, WIDTH, HEIGHT);
+                    grid.lineStyle(1, 0x444444, 0.5);
+                    for (let x = 24; x < WIDTH; x += 32) grid.lineBetween(x, 0, x, HEIGHT);
+                    for (let y = 24; y < HEIGHT; y += 32) grid.lineBetween(0, y, WIDTH, y);
+
+                    // 패들은 키보드로 좌우 이동합니다.
+                    this.paddle = this.add.rectangle(WIDTH / 2, HEIGHT - 62, 112, 14, 0xffffff);
+                    this.physics.add.existing(this.paddle);
+                    this.paddle.body.setImmovable(true).setAllowGravity(false);
+
+                    // 공은 패들과 벽돌에 부딪혀 반사됩니다.
+                    this.ball = this.add.circle(WIDTH / 2, this.paddle.y - 22, 8, 0xffffff);
+                    this.physics.add.existing(this.ball);
+                    this.ball.body.setCircle(8).setBounce(1).setCollideWorldBounds(true).setAllowGravity(false);
+
+                    this.bricks = this.physics.add.staticGroup();
+                    this.createBricks();
+                    this.physics.add.collider(this.ball, this.paddle, this.hitPaddle, null, this);
+                    this.physics.add.collider(this.ball, this.bricks, this.hitBrick, null, this);
+
+                    this.message = this.add.text(WIDTH / 2, HEIGHT / 2, "PRESS SPACE", {
+                        color: "#ffffff",
+                        fontFamily: "Consolas, monospace",
+                        fontSize: "20px",
+                        fontStyle: "bold"
+                    }).setOrigin(0.5).setDepth(2);
+
+                    this.updateScoreboard();
+                    this.setMode("ready");
+                }
+
+                // 벽돌을 5행 10열로 배치하고 행마다 회색을 바꿉니다.
+                createBricks() {
+                    const colors = [0xf2f2f2, 0xd4d4d4, 0xb6b6b6, 0x989898, 0x7a7a7a];
+                    for (let row = 0; row < 5; row += 1) {
+                        for (let column = 0; column < 10; column += 1) {
+                            const x = 111 + column * 82;
+                            const y = 112 + row * 31;
+                            const brick = this.add.rectangle(x, y, 72, 20, colors[row]);
+                            this.bricks.add(brick);
+                        }
+                    }
+                }
+
+                // 누른 방향 키에 따라 패들을 움직이고 공을 놓쳤는지 확인합니다.
+                update(_time, delta) {
+                    const left = heldKeys.has("arrowleft") || heldKeys.has("a");
+                    const right = heldKeys.has("arrowright") || heldKeys.has("d");
+                    let x = this.paddle.x;
+
+                    if (left) x -= 520 * delta / 1000;
+                    if (right) x += 520 * delta / 1000;
+                    this.paddle.x = Phaser.Math.Clamp(x, 74, WIDTH - 74);
+                    this.paddle.body.updateFromGameObject();
+
+                    if (this.mode === "ready") this.ball.setPosition(this.paddle.x, this.paddle.y - 22);
+                    if (this.mode === "playing" && this.ball.y > HEIGHT + 10) this.finish("lost");
+                }
+
+                // 패들 중심에서 맞은 위치에 따라 공의 반사 각도를 정합니다.
+                hitPaddle(ball, paddle) {
+                    const offset = Phaser.Math.Clamp((ball.x - paddle.x) / (paddle.width / 2), -0.92, 0.92);
+                    const speed = 440;
+                    const velocityX = offset * speed * 0.82;
+                    ball.body.setVelocity(velocityX, -Math.sqrt(speed * speed - velocityX * velocityX));
+                }
+
+                // 맞은 벽돌을 지우고 점수와 남은 수를 갱신합니다.
+                hitBrick(ball, brick) {
+                    if (!brick.active) return;
+                    brick.setActive(false).setVisible(false);
+                    brick.body.enable = false;
+                    this.score += 10;
+                    this.bricksLeft -= 1;
+                    this.updateScoreboard();
+                    if (this.bricksLeft === 0) this.finish("won");
+                }
+
+                // 대기 중인 공을 위쪽으로 발사합니다.
+                launch() {
+                    if (this.mode !== "ready") return;
+                    this.ball.body.setVelocity(165, -420);
+                    this.message.setVisible(false);
+                    this.setMode("playing");
+                }
+
+                // 벽돌을 모두 깼거나 공을 놓치면 한 판을 끝냅니다.
+                finish(result) {
+                    this.physics.world.pause();
+                    this.message.setText(result === "won" ? "ALL CLEAR" : "GAME OVER").setVisible(true);
+                    this.setMode(result);
+                }
+
+                setMode(mode) {
+                    this.mode = mode;
+                    stateOutput.textContent = mode.toUpperCase();
+                }
+
+                // 게임 화면의 점수와 남은 벽돌 수를 표시합니다.
+                updateScoreboard() {
+                    scoreOutput.textContent = String(this.score).padStart(4, "0");
+                    remainingOutput.textContent = String(this.bricksLeft).padStart(2, "0");
+                }
+            }
+
+            const game = new Phaser.Game({
+                type: Phaser.AUTO,
+                parent: stage,
+                width: WIDTH,
+                height: HEIGHT,
+                backgroundColor: "#111111",
+                scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+                physics: { default: "arcade", arcade: { debug: false } },
+                scene: [Breakout]
+            });
+
+            const getScene = () => game.scene.getScene("Breakout");
+            window.addEventListener("keydown", (event) => {
+                const key = event.key.toLowerCase();
+                if (["arrowleft", "arrowright", "a", "d"].includes(key)) {
+                    event.preventDefault();
+                    heldKeys.add(key);
+                }
+                if (event.code === "Space") {
+                    event.preventDefault();
+                    if (!event.repeat) getScene().launch();
+                }
+                if (key === "r" && !event.repeat) getScene().scene.restart();
+            });
+            window.addEventListener("keyup", (event) => heldKeys.delete(event.key.toLowerCase()));
+            window.addEventListener("blur", () => heldKeys.clear());
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+/* 모든 요소의 크기 계산에 테두리와 안쪽 여백을 포함 */
+* {
+    box-sizing: border-box;
+}
+
+/* 페이지 전체 기본 모양 */
+body {
+    margin: 0;
+    font-family: "Malgun Gothic", sans-serif;
+    color: #222;
+    background-color: #f4f6fa;
+}
+
+/* 가운데 정렬된 본문 상자 */
+.container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 32px 16px;
+    text-align: center;
+}
+
+h1 {
+    margin: 0 0 8px;
+}
+
+.desc {
+    margin: 0 0 24px;
+    color: #666;
+}
+
+/* 공 6개를 가로로 나열하는 영역 */
+.balls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    min-height: 56px;
+}
+
+/* 공 하나의 모양 (동그라미) */
+.ball {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+    box-shadow: inset -4px -4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 번호 구간별 공 색상 (실제 로또 공 색상 기준) */
+.ball-yellow { background-color: #fbc400; }  /* 1~10 */
+.ball-blue   { background-color: #69c8f2; }  /* 11~20 */
+.ball-red    { background-color: #ff7272; }  /* 21~30 */
+.ball-gray   { background-color: #aaaaaa; }  /* 31~40 */
+.ball-green  { background-color: #b0d840; }  /* 41~45 */
+
+.count {
+    margin: 20px 0;
+    font-size: 18px;
+}
+
+/* 버튼 공통 모양 */
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btn-draw {
+    color: #fff;
+    background-color: #3366ff;
+}
+
+.btn-reset {
+    color: #333;
+    background-color: #dde2ea;
+}
+
+.btn:hover {
+    opacity: 0.85;
+}
+
+/* ===== 출현 횟수 그래프 ===== */
+.stats {
+    margin-top: 48px;
+    padding: 24px 16px;
+    border-radius: 12px;
+    background-color: #fff;
+    text-align: left;
+}
+
+.stats h2 {
+    margin: 0 0 4px;
+    font-size: 20px;
+}
+
+.stats-info {
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: #666;
+}
+
+/* 그래프 한 줄: [번호] [막대] [횟수] */
+.chart-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+/* 그래프 왼쪽 번호 표시용 작은 공 */
+.chart-row .ball {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+    box-shadow: none;
+}
+
+/* 막대가 들어가는 회색 바탕 */
+.bar-track {
+    flex: 1;
+    height: 16px;
+    border-radius: 4px;
+    background-color: #eef1f5;
+}
+
+/* 실제 막대 (너비는 자바스크립트에서 정함) */
+.bar {
+    height: 100%;
+    border-radius: 4px;
+}
+
+/* 막대 오른쪽 횟수 글자 */
+.bar-count {
+    width: 36px;
+    font-size: 13px;
+    text-align: right;
+}
+
+/* 가장 많이/적게 나온 번호 강조 */
+.bar-count.most {
+    font-weight: bold;
+    color: #e03131;
+}
+
+.bar-count.least {
+    font-weight: bold;
+    color: #1c7ed6;
+}
